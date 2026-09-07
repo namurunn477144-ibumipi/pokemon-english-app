@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
-  <!-- 検索避けの設定 -->
   <meta name="robots" content="noindex, nofollow">
-  
   <title>えいごクイズ - セット1（洋食＆イーブイ）</title>
   <style>
     :root {
@@ -32,7 +29,6 @@
     .view { display: none; padding: 20px 10px; min-height: 100vh; flex-direction: column; align-items: center; }
     .view.active { display: flex; }
     
-    /* ボタン共通スタイル */
     .big-btn {
       background-color: var(--primary); color: white; border: none;
       border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold;
@@ -41,15 +37,10 @@
     }
     .big-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--btn-shadow); }
     
-    /* ルーム（育成）画面 */
     #partner-container { position: relative; margin: 20px 0; }
-    
     #partner-image {
-      width: 200px;
-      height: 200px;
-      object-fit: contain;
-      margin: 0; padding: 10px;
-      animation: float 3s ease-in-out infinite;
+      width: 200px; height: 200px; object-fit: contain;
+      margin: 0; padding: 10px; animation: float 3s ease-in-out infinite;
     }
     
     @keyframes float {
@@ -79,7 +70,6 @@
     
     .eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }
     
-    /* クイズ画面 */
     .quiz-header { margin-bottom: 20px; }
     #quiz-progress-text { font-size: 1.6rem; font-weight: bold; }
     #quiz-content { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -105,7 +95,6 @@
     
     #play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}
     
-    /* フィードバック (正解・不正解) */
     #feedback-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       display: flex; justify-content: center; align-items: center; flex-direction: column;
@@ -116,7 +105,6 @@
     .feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }
     @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
     
-    /* 進化演出 */
     #evolve-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s;
@@ -125,12 +113,7 @@
     .evolve-sparkle { font-size: 5rem; animation: spin 2s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     
-    #evolve-image {
-      width: 250px;
-      height: 250px;
-      object-fit: contain;
-      margin: 20px;
-    }
+    #evolve-image { width: 250px; height: 250px; object-fit: contain; margin: 20px; }
   </style>
 </head>
 <body>
@@ -170,10 +153,7 @@
     <div class="quiz-header">
       <div id="quiz-progress-text">だい 1 もん！ (1/3)</div>
     </div>
-    
-    <div id="quiz-content">
-       <!-- JSでクイズのHTMLを書き換えます -->
-    </div>
+    <div id="quiz-content"></div>
   </div>
 </div>
 
@@ -222,39 +202,32 @@ const wordData = [
   { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" }
 ];
 
-// ごはんリスト
-const foodData = [
-  { id: "f1", name: "ハンバーグ", emoji: "🍔", unlockCost: 3 },
-  { id: "f2", name: "オムライス", emoji: "🍳", unlockCost: 6 },
-  { id: "f3", name: "グラタン", emoji: "🥘", unlockCost: 9 },
-  { id: "f4", name: "ステーキ", emoji: "🥩", unlockCost: 12 },
-  { id: "f5", name: "ナポリタン", emoji: "🍝", unlockCost: 15 }
+// 洋食ごはん 20種類データ
+const allFoods = [
+  { name: "ハンバーグ", emoji: "🍔" }, { name: "オムライス", emoji: "🍳" }, { name: "グラタン", emoji: "🥘" }, { name: "ステーキ", emoji: "🥩" }, { name: "ナポリタン", emoji: "🍝" },
+  { name: "ピザ", emoji: "🍕" }, { name: "カレーライス", emoji: "🍛" }, { name: "ホットドッグ", emoji: "🌭" }, { name: "サンドイッチ", emoji: "🥪" }, { name: "フライドポテト", emoji: "🍟" },
+  { name: "フライドチキン", emoji: "🍗" }, { name: "チーズフォンデュ", emoji: "🧀" }, { name: "ベーコンエッグ", emoji: "🥓" }, { name: "パンケーキ", emoji: "🥞" }, { name: "ワッフル", emoji: "🧇" },
+  { name: "クロワッサン", emoji: "🥐" }, { name: "フランスパン", emoji: "🥖" }, { name: "クリームシチュー", emoji: "🍲" }, { name: "ポタージュ", emoji: "🥣" }, { name: "パイ", emoji: "🥧" }
 ];
 
 // 進化先リスト
 const evolutionsList = [
-  { name: "シャワーズ", file: "syawa-zu.png" },
-  { name: "サンダース", file: "sanda-su.png" },
-  { name: "ブースター", file: "bu-suta-.png" },
-  { name: "エーフィ", file: "e-fi.jpg" },
-  { name: "ブラッキー", file: "buraxtuki-.png" },
-  { name: "リーフィア", file: "ri-fia.png" },
-  { name: "グレイシア", file: "gureisia.png" },
-  { name: "ニンフィア", file: "ninfia.png" }
+  { name: "シャワーズ", file: "syawa-zu.png" }, { name: "サンダース", file: "sanda-su.png" }, { name: "ブースター", file: "bu-suta-.png" },
+  { name: "エーフィ", file: "e-fi.jpg" }, { name: "ブラッキー", file: "buraxtuki-.png" }, { name: "リーフィア", file: "ri-fia.png" },
+  { name: "グレイシア", file: "gureisia.png" }, { name: "ニンフィア", file: "ninfia.png" }
 ];
 
-let totalCorrect = 0; // 通算正解数 (鍵)
-let currentExp = 0;   // なかよし度
-let currentPartner = { name: "イーブイ", file: "i-bui.png" }; // 現在の姿
+// 状態変数
+let totalCorrect = 0;
+let currentExp = 0;
 let isEvolved = false;
+let currentPartner = { name: "イーブイ", file: "i-bui.png" };
+let activeFoods = []; // 現在選ばれている5つのごはん
 
 // 音声読み込み設定
 let synthVoices = [];
-window.speechSynthesis.onvoiceschanged = () => {
-  synthVoices = window.speechSynthesis.getVoices();
-};
+window.speechSynthesis.onvoiceschanged = () => { synthVoices = window.speechSynthesis.getVoices(); };
 
-// 画面要素
 const roomView = document.getElementById('room-view');
 const quizView = document.getElementById('quiz-view');
 const foodListEl = document.getElementById('food-list');
@@ -267,17 +240,51 @@ const evolveImg = document.getElementById('evolve-image');
 const mainTitle = document.getElementById('main-title');
 const resetBtn = document.getElementById('reset-evo-btn');
 
-// Web Speech API が使えるかチェック
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+// セーブデータを保存する関数
+function saveGameState() {
+  const data = { totalCorrect, currentExp, isEvolved, currentPartner, activeFoods };
+  localStorage.setItem('eigoQuizSaveData', JSON.stringify(data));
+}
 
-// 初期化
+// セーブデータを読み込む関数
+function loadGameState() {
+  const saved = localStorage.getItem('eigoQuizSaveData');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    totalCorrect = parsed.totalCorrect || 0;
+    currentExp = parsed.currentExp || 0;
+    isEvolved = parsed.isEvolved || false;
+    currentPartner = parsed.currentPartner || { name: "イーブイ", file: "i-bui.png" };
+    activeFoods = parsed.activeFoods;
+  }
+  
+  // もしデータがない、またはごはんが設定されていない場合は新しくランダムに5つ選ぶ
+  if (!activeFoods || activeFoods.length === 0) {
+    selectRandomFoods();
+  }
+}
+
+// 20種類からランダムに5種類を選ぶ
+function selectRandomFoods() {
+  const shuffledFoods = [...allFoods].sort(() => 0.5 - Math.random()).slice(0, 5);
+  activeFoods = shuffledFoods.map((food, index) => {
+    return { ...food, unlockCost: (index + 1) * 3 }; // 3, 6, 9, 12, 15
+  });
+  saveGameState();
+}
+
+// 初期化（起動時）
 function initRoom() {
+  loadGameState();
+  
   keyCountEl.innerText = totalCorrect;
   foodListEl.innerHTML = "";
   
-  // ポケモン画像の設定
   partnerImg.src = currentPartner.file;
   partnerName.innerText = currentPartner.name;
+  
+  expText.innerText = currentExp;
+  expBar.style.width = currentExp + "%";
   
   if (isEvolved) {
     mainTitle.innerHTML = `えいごクイズ - セット1<br>（ようしょく＆${currentPartner.name}）`;
@@ -287,7 +294,7 @@ function initRoom() {
     resetBtn.style.display = 'none'; 
   }
   
-  foodData.forEach(food => {
+  activeFoods.forEach(food => {
     const isUnlocked = totalCorrect >= food.unlockCost;
     const foodEl = document.createElement('div');
     foodEl.className = 'food-item' + (isUnlocked ? '' : ' locked');
@@ -303,7 +310,6 @@ function initRoom() {
 function feedPartner(food) {
   if (isEvolved) return;
   
-  // もぐもぐアニメーション
   const msg = document.getElementById('eating-msg');
   msg.style.opacity = 1;
   msg.style.top = "-20px";
@@ -312,13 +318,13 @@ function feedPartner(food) {
   setTimeout(() => { partnerImg.style.transform = "scale(1)"; }, 300);
   setTimeout(() => { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);
   
-  // 経験値アップ
   currentExp += 20;
   if(currentExp > 100) currentExp = 100;
   expText.innerText = currentExp;
   expBar.style.width = currentExp + "%";
   
-  // 進化判定
+  saveGameState(); // ごはんを食べたらセーブ
+  
   if (currentExp >= 100) {
     setTimeout(evolve, 1000);
   }
@@ -326,33 +332,29 @@ function feedPartner(food) {
 
 function evolve() {
   isEvolved = true;
-  
-  // ランダムに進化先を1つ選ぶ
   const randomEvolution = evolutionsList[Math.floor(Math.random() * evolutionsList.length)];
   currentPartner = randomEvolution;
   
-  // 進化画面の設定
+  saveGameState(); // 進化したらセーブ
+  
   const overlay = document.getElementById('evolve-overlay');
   evolveImg.src = currentPartner.file;
   document.getElementById('evolve-text').innerHTML = `おめでとう！<br>${currentPartner.name}にしんかした！`;
-  
   overlay.classList.add('show');
   
-  // ルーム画面の更新
   initRoom();
 }
 
-// リセットボタンの処理
+// リセットボタン（初めから）
 resetBtn.onclick = () => {
-  isEvolved = false;
-  currentExp = 0;
-  totalCorrect = 0; // 鍵もリセット
-  currentPartner = { name: "イーブイ", file: "i-bui.png" };
-  
-  expText.innerText = currentExp;
-  expBar.style.width = currentExp + "%";
-  
-  initRoom();
+  if (confirm("イーブイにもどって、いちから やりなおす？\n（あつめた ごはんの カギも リセットされるよ！）")) {
+    isEvolved = false;
+    currentExp = 0;
+    totalCorrect = 0; 
+    currentPartner = { name: "イーブイ", file: "i-bui.png" };
+    selectRandomFoods(); // ごはんのラインナップも新しく入れ替える
+    initRoom();
+  }
 };
 
 // --- クイズロジック ---
@@ -366,7 +368,6 @@ document.getElementById('start-quiz-btn').onclick = () => {
 };
 
 function startRound() {
-  // ランダムに3問選ぶ
   const shuffled = [...wordData].sort(() => 0.5 - Math.random());
   roundQuestions = shuffled.slice(0, 3);
   currentQIndex = 0;
@@ -375,7 +376,6 @@ function startRound() {
 
 function showNextQuestion() {
   if (currentQIndex >= roundQuestions.length) {
-    // ラウンド終了
     quizView.classList.remove('active');
     roomView.classList.add('active');
     initRoom();
@@ -388,12 +388,11 @@ function showNextQuestion() {
   const contentEl = document.getElementById('quiz-content');
   contentEl.innerHTML = "";
   
-  // クイズ形式をランダムに決定
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   let qType = Math.floor(Math.random() * 3) + 1;
-  if (!SpeechRecognition && qType === 2) qType = 1; // 音声認識非対応ブラウザ対策
+  if (!SpeechRecognition && qType === 2) qType = 1;
   
   if (qType === 1) {
-    // 形式1：おとをきいて、えらぼう
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">おとをきいて、えらぼう！</p>
       <button id="play-voice-btn">🔊</button>
@@ -404,7 +403,6 @@ function showNextQuestion() {
     setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else if (qType === 2) {
-    // 形式2：マイクでお話し
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">マイクをおして、えいごでいってみよう！</p>
       <div class="question-emoji">${qData.emoji}</div>
@@ -416,43 +414,52 @@ function showNextQuestion() {
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
     const micBtn = document.getElementById('mic-btn');
     
-    // 【修正】スマホで2回目以降も反応するように、クリックするたびに認識システムを作り直す
+    // 【修正】マイクボタンを押すたびに新しく認識システムを起動し直す
     micBtn.onclick = () => {
       if (micBtn.classList.contains('listening')) return;
       
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      
-      micBtn.classList.add('listening');
-      
-      recognition.onresult = (event) => {
-        micBtn.classList.remove('listening');
-        const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
         
-        if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
-          checkAnswer(true);
-        } else {
-          checkAnswer(false);
-        }
-      };
-      
-      recognition.onerror = () => { 
-        micBtn.classList.remove('listening'); 
-        checkAnswer(false); 
-      };
-      
-      recognition.onspeechend = () => {
-        recognition.stop();
-      };
-      
-      recognition.start();
+        micBtn.classList.add('listening');
+        
+        recognition.onresult = (event) => {
+          micBtn.classList.remove('listening');
+          const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
+          
+          if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
+            checkAnswer(true);
+          } else {
+            checkAnswer(false);
+          }
+        };
+        
+        // エラー時は不正解にせず、ボタンを元の色に戻すだけ（やり直せる）
+        recognition.onerror = (e) => {
+          micBtn.classList.remove('listening');
+          console.log("Mic error:", e.error);
+        };
+        
+        recognition.onspeechend = () => {
+          recognition.stop();
+        };
+        
+        // 何も言葉が認識されなかった場合もやり直せるようにする
+        recognition.onnomatch = () => {
+          micBtn.classList.remove('listening');
+        };
+        
+        recognition.start();
+      } catch(e) {
+        micBtn.classList.remove('listening');
+      }
     };
     
   } else {
-    // 形式3：えいごをよんで、えらぼう（音声ボタン追加）
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">えいごをよんで、えらぼう！</p>
       <button id="play-voice-btn" style="margin-bottom:10px;">🔊</button>
@@ -461,8 +468,6 @@ function showNextQuestion() {
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
     createOptions(qData, contentEl.querySelector('#options-container'));
-    
-    // 問題が出た時に自動で1回だけ音声を流す
     setTimeout(() => speakCuteVoice(qData.en), 500);
   }
 }
@@ -475,14 +480,12 @@ function createOptions(correctData, container) {
     const btn = document.createElement('div');
     btn.className = 'option-btn';
     btn.innerHTML = `<span style="font-size:3rem;">${opt.emoji}</span> <span style="font-size:1.5rem;">${opt.ja}</span>`;
-    btn.onclick = () => {
-      checkAnswer(opt.en === correctData.en);
-    };
+    btn.onclick = () => checkAnswer(opt.en === correctData.en);
     container.appendChild(btn);
   });
 }
 
-// 【修正】落ち着いた優しい女性の声になるようにピッチ（高さ）を調整 (1.5 -> 1.1)
+// 【修正】高すぎず、落ち着いた声にするため pitch = 1.0 (標準) に設定
 function speakCuteVoice(text) {
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'en-US';
@@ -491,7 +494,6 @@ function speakCuteVoice(text) {
     synthVoices = window.speechSynthesis.getVoices();
   }
   
-  // 女性らしい声を探す
   const cuteVoice = synthVoices.find(v => 
     v.lang.startsWith('en') && 
     (v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.name.includes('Female'))
@@ -501,8 +503,8 @@ function speakCuteVoice(text) {
     msg.voice = cuteVoice;
   }
   
-  msg.pitch = 1.1; // 高すぎない落ち着いた声に設定
-  msg.rate = 0.9;  // 少しゆっくり
+  msg.pitch = 1.0; 
+  msg.rate = 0.9;  
   
   window.speechSynthesis.speak(msg);
 }
@@ -517,6 +519,7 @@ function checkAnswer(isCorrect) {
     text.innerText = "せいかい！すごい！";
     text.style.color = "var(--correct)";
     totalCorrect++;
+    saveGameState(); // 正解したら鍵が増えるのでセーブ
   } else {
     icon.innerText = "❌";
     text.innerText = "おしい！もういちど！";
@@ -524,7 +527,6 @@ function checkAnswer(isCorrect) {
   }
   
   overlay.classList.add('show');
-  
   speakCuteVoice(isCorrect ? "Good job!" : "Oh no");
   
   setTimeout(() => {
@@ -536,8 +538,7 @@ function checkAnswer(isCorrect) {
   }, 2000);
 }
 
-// 起動時の初期化
-initRoom();
+window.onload = initRoom;
 </script>
 
 </body>
