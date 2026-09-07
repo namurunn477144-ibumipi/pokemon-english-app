@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; min-height: 15.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ja"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;えいごクイズ - セット1（洋食＆イーブイ）&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--primary: #FFB347;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--secondary: #FFCC33;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg: #FFF9E6;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--text: #5D4037;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--correct: #4CAF50;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--incorrect: #FF9800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--btn-shadow: #E6A100;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', 'Meiryo', sans-serif; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0; padding: 0; background-color: var(--bg); color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align: center; overflow-x: hidden; touch-action: manipulation;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1, h2, h3, p { margin: 10px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1 { font-size: 1.5rem; color: #D84315; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.view { display: none; padding: 20px 10px; min-height: 100vh; flex-direction: column; align-items: center; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.view.active { display: flex; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ボタン共通スタイル */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.big-btn {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color: var(--primary); color: white; border: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 6px 0 var(--btn-shadow); cursor: pointer; margin: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: transform 0.1s, box-shadow 0.1s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.big-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--btn-shadow); }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ルーム（育成）画面 */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#partner-container { position: relative; margin: 20px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#partner-image {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 7rem; margin: 0; padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>animation: float 3s ease-in-out infinite;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>/* ▼ 好きな画像にする場合は、この div の中身を &lt;img src="URL" alt="イーブイ" style="width:150px;"&gt; に変更してください ▼ */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes float {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>0% { transform: translateY(0px); }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>50% { transform: translateY(-10px); }</p>
+<p class="p1"><span class="Apple-converted-space">      </span>100% { transform: translateY(0px); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#partner-name { font-size: 1.8rem; font-weight: bold; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.exp-container { width: 90%; max-width: 400px; margin: 10px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.exp-label { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.exp-bar-bg { background-color: #E0E0E0; border-radius: 15px; height: 30px; overflow: hidden; position: relative; border: 3px solid #FFF;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.exp-bar-fill {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, #FF9800, #FFC107);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height: 100%; width: 0%; transition: width 0.5s ease-out;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.food-section { width: 90%; max-width: 400px; background: white; border-radius: 20px; padding: 15px; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.food-list { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.food-item {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 2.5rem; background: var(--bg); border-radius: 15px; padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.food-item:active { transform: translateY(4px); box-shadow: 0 0 0 #E0E0E0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.food-item.locked { filter: grayscale(100%) opacity(0.3); pointer-events: none; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* クイズ画面 */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.quiz-header { margin-bottom: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#quiz-progress-text { font-size: 1.6rem; font-weight: bold; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#quiz-content { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.question-emoji { font-size: 5rem; margin: 10px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.question-word { font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #333; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.options-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.option-btn {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #FFF; border: 4px solid var(--primary); border-radius: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 15px; font-size: 2rem; display: flex; justify-content: center; align-items: center; gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 0 var(--primary); cursor: pointer; transition: 0.1s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.option-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary); }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.mic-btn {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #E91E63; box-shadow: 0 6px 0 #C2185B; color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: none; border-radius: 50%; width: 100px; height: 100px; font-size: 3rem;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 20px auto; cursor: pointer; display: flex; justify-content: center; align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.mic-btn.listening { animation: pulse 1s infinite; background: #F44336; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>#play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* フィードバック (正解・不正解) */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#feedback-overlay {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex; justify-content: center; align-items: center; flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>z-index: 100; background: rgba(255,255,255,0.9); opacity: 0; pointer-events: none; transition: opacity 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#feedback-overlay.show { opacity: 1; pointer-events: auto; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.feedback-icon { font-size: 10rem; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* 進化演出 */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#evolve-overlay {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#evolve-overlay.show { opacity: 1; pointer-events: auto; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.evolve-sparkle { font-size: 5rem; animation: spin 2s linear infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes spin { 100% { transform: rotate(360deg); } }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="app"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- 育成ルーム画面 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="room-view" class="view active"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1&gt;えいごクイズ - セット1&lt;br&gt;（ようしょく＆イーブイ）&lt;/h1&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="partner-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="partner-image"&gt;🦊&lt;/div&gt;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="partner-name"&gt;イーブイ&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="eating-msg" class="eating-msg"&gt;もぐもぐ♪&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="exp-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="exp-label"&gt;なかよしど: &lt;span id="exp-text"&gt;0&lt;/span&gt;%&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="exp-bar-bg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">         </span>&lt;div id="exp-bar" class="exp-bar-fill"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="food-section"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size: 1.2rem; font-weight: bold;"&gt;ごはん（かぎ🔑: &lt;span id="key-count"&gt;0&lt;/span&gt;）&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size: 0.9rem; color: #777;"&gt;２もんせいかいで、ごはんが１つひらくよ！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="food-list" class="food-list"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- ごはんアイテムがここに生成されます --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="start-quiz-btn" class="big-btn"&gt;クイズをする (5もん)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;!-- クイズ画面 --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="quiz-view" class="view"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="quiz-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="quiz-progress-text"&gt;だい 1 もん！ (1/5)&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="quiz-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">       </span>&lt;!-- JSでクイズのHTMLを書き換えます --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- フィードバック画面 --&gt;</p>
+<p class="p1">&lt;div id="feedback-overlay"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="feedback-icon" class="feedback-icon"&gt;⭕&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="feedback-text" class="feedback-text"&gt;せいかい！&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;!-- 進化画面 --&gt;</p>
+<p class="p1">&lt;div id="evolve-overlay"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="evolve-sparkle"&gt;✨&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="font-size: 7rem; margin: 20px;" id="evolve-image"&gt;🔥🦊🔥&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2 style="font-size: 2.5rem; color: #D84315;"&gt;おめでとう！&lt;br&gt;ブースターにしんかした！&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="big-btn" onclick="document.getElementById('evolve-overlay').classList.remove('show')"&gt;もどる&lt;/button&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">// 問題データ (150問)</p>
+<p class="p1">const wordData = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// どうぶつ</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Dog", ja: "いぬ", emoji: "🐶" }, { en: "Cat", ja: "ねこ", emoji: "🐱" }, { en: "Rabbit", ja: "うさぎ", emoji: "🐰" }, { en: "Elephant", ja: "ぞう", emoji: "🐘" }, { en: "Lion", ja: "ライオン", emoji: "🦁" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Tiger", ja: "とら", emoji: "🐯" }, { en: "Bear", ja: "くま", emoji: "🐻" }, { en: "Monkey", ja: "さる", emoji: "🐵" }, { en: "Mouse", ja: "ねずみ", emoji: "🐭" }, { en: "Cow", ja: "うし", emoji: "🐮" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Pig", ja: "ぶた", emoji: "🐷" }, { en: "Horse", ja: "うま", emoji: "🐴" }, { en: "Sheep", ja: "ひつじ", emoji: "🐑" }, { en: "Bird", ja: "とり", emoji: "🐦" }, { en: "Penguin", ja: "ペンギン", emoji: "🐧" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Duck", ja: "あひる", emoji: "🦆" }, { en: "Chicken", ja: "にわとり", emoji: "🐔" }, { en: "Frog", ja: "かえる", emoji: "🐸" }, { en: "Snake", ja: "へび", emoji: "🐍" }, { en: "Turtle", ja: "かめ", emoji: "🐢" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Fish", ja: "さかな", emoji: "🐟" }, { en: "Shark", ja: "さめ", emoji: "🦈" }, { en: "Whale", ja: "くじら", emoji: "🐳" }, { en: "Dolphin", ja: "いるか", emoji: "🐬" }, { en: "Octopus", ja: "たこ", emoji: "🐙" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Crab", ja: "かに", emoji: "🦀" }, { en: "Butterfly", ja: "ちょうちょ", emoji: "🦋" }, { en: "Bee", ja: "はち", emoji: "🐝" }, { en: "Ladybug", ja: "てんとうむし", emoji: "🐞" }, { en: "Ant", ja: "あり", emoji: "🐜" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// たべもの</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Apple", ja: "りんご", emoji: "🍎" }, { en: "Banana", ja: "バナナ", emoji: "🍌" }, { en: "Orange", ja: "オレンジ", emoji: "🍊" }, { en: "Grape", ja: "ぶどう", emoji: "🍇" }, { en: "Strawberry", ja: "いちご", emoji: "🍓" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Melon", ja: "メロン", emoji: "🍈" }, { en: "Watermelon", ja: "すいか", emoji: "🍉" }, { en: "Peach", ja: "もも", emoji: "🍑" }, { en: "Cherry", ja: "さくらんぼ", emoji: "🍒" }, { en: "Tomato", ja: "トマト", emoji: "🍅" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Bread", ja: "パン", emoji: "🍞" }, { en: "Rice", ja: "ごはん", emoji: "🍚" }, { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" }, { en: "Ice cream", ja: "アイスクリーム", emoji: "🍦" }, { en: "Chocolate", ja: "チョコレート", emoji: "🍫" }, { en: "Candy", ja: "キャンディ", emoji: "🍬" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// のりもの</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Car", ja: "くるま", emoji: "🚗" }, { en: "Bus", ja: "バス", emoji: "🚌" }, { en: "Taxi", ja: "タクシー", emoji: "🚕" }, { en: "Police car", ja: "パトカー", emoji: "🚓" }, { en: "Ambulance", ja: "きゅうきゅうしゃ", emoji: "🚑" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Fire engine", ja: "しょうぼうしゃ", emoji: "🚒" }, { en: "Truck", ja: "トラック", emoji: "🚚" }, { en: "Train", ja: "でんしゃ", emoji: "🚃" }, { en: "Airplane", ja: "ひこうき", emoji: "✈️" }, { en: "Helicopter", ja: "ヘリコプター", emoji: "🚁" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Motorcycle", ja: "バイク", emoji: "🏍️" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "UFO", ja: "ユーフォー", emoji: "🛸" }, { en: "Tractor", ja: "トラクター", emoji: "🚜" }, { en: "Scooter", ja: "キックボード", emoji: "🛴" }, { en: "Skateboard", ja: "スケートボード", emoji: "🛹" }, { en: "Roller coaster", ja: "ジェットコースター", emoji: "🎢" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// いろ・かず</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Red", ja: "あか", emoji: "🔴" }, { en: "Blue", ja: "あお", emoji: "🔵" }, { en: "Yellow", ja: "きいろ", emoji: "🟡" }, { en: "Green", ja: "みどり", emoji: "🟢" }, { en: "Purple", ja: "むらさき", emoji: "🟣" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Pink", ja: "ピンク", emoji: "🌸" }, { en: "Brown", ja: "ちゃいろ", emoji: "🟤" }, { en: "Black", ja: "くろ", emoji: "⚫" }, { en: "White", ja: "しろ", emoji: "⚪" }, { en: "Rainbow", ja: "にじいろ", emoji: "🌈" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "One", ja: "いち", emoji: "1️⃣" }, { en: "Two", ja: "に", emoji: "2️⃣" }, { en: "Three", ja: "さん", emoji: "3️⃣" }, { en: "Four", ja: "よん", emoji: "4️⃣" }, { en: "Five", ja: "ご", emoji: "5️⃣" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Six", ja: "ろく", emoji: "6️⃣" }, { en: "Seven", ja: "なな", emoji: "7️⃣" }, { en: "Eight", ja: "はち", emoji: "8️⃣" }, { en: "Nine", ja: "きゅう", emoji: "9️⃣" }, { en: "Ten", ja: "じゅう", emoji: "🔟" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// かぞく・みのまわりのもの</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Father", ja: "おとうさん", emoji: "👨" }, { en: "Mother", ja: "おかあさん", emoji: "👩" }, { en: "Brother", ja: "おにいちゃん", emoji: "👦" }, { en: "Sister", ja: "おねえちゃん", emoji: "👧" }, { en: "Baby", ja: "あかちゃん", emoji: "👶" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Grandfather", ja: "おじいちゃん", emoji: "👴" }, { en: "Grandmother", ja: "おばあちゃん", emoji: "👵" }, { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Pen", ja: "ペン", emoji: "🖊️" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Bag", ja: "かばん", emoji: "🎒" }, { en: "Hat", ja: "ぼうし", emoji: "🧢" }, { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Socks", ja: "くつした", emoji: "🧦" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Bed", ja: "ベッド", emoji: "🛏️" }, { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Phone", ja: "でんわ", emoji: "📱" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// あいさつ</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good afternoon", ja: "こんにちは", emoji: "🏙️" }, { en: "Good evening", ja: "こんばんは", emoji: "🌃" }, { en: "Good night", ja: "おやすみ", emoji: "😴" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Goodbye", ja: "さようなら", emoji: "👋" }, { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" }, { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Please", ja: "おねがい", emoji: "🥺" }, { en: "How are you", ja: "げんき？", emoji: "❓" }, { en: "I am fine", ja: "げんきだよ", emoji: "🙆" }, { en: "Nice to meet you", ja: "はじめまして", emoji: "🤝" }, { en: "See you", ja: "またね", emoji: "👀" },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" }</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">// ごはんリスト (必要正解数：2問正解ごとに1つ解放)</p>
+<p class="p1">const foodData = [</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: "f1", name: "ハンバーグ", emoji: "🍔", unlockCost: 2 },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: "f2", name: "オムライス", emoji: "🍳", unlockCost: 4 },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: "f3", name: "グラタン", emoji: "🥘", unlockCost: 6 },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: "f4", name: "ステーキ", emoji: "🥩", unlockCost: 8 },</p>
+<p class="p1"><span class="Apple-converted-space">  </span>{ id: "f5", name: "ナポリタン", emoji: "🍝", unlockCost: 10 }</p>
+<p class="p1">];</p>
+<p class="p2"><br></p>
+<p class="p1">let totalCorrect = 0; // 通算正解数 (鍵)</p>
+<p class="p1">let currentExp = 0; <span class="Apple-converted-space">  </span>// なかよし度</p>
+<p class="p1">let isEvolved = false;</p>
+<p class="p2"><br></p>
+<p class="p1">// 画面要素</p>
+<p class="p1">const roomView = document.getElementById('room-view');</p>
+<p class="p1">const quizView = document.getElementById('quiz-view');</p>
+<p class="p1">const foodListEl = document.getElementById('food-list');</p>
+<p class="p1">const keyCountEl = document.getElementById('key-count');</p>
+<p class="p1">const expText = document.getElementById('exp-text');</p>
+<p class="p1">const expBar = document.getElementById('exp-bar');</p>
+<p class="p1">const partnerImg = document.getElementById('partner-image');</p>
+<p class="p1">const partnerName = document.getElementById('partner-name');</p>
+<p class="p2"><br></p>
+<p class="p1">// Web Speech APIの準備</p>
+<p class="p1">const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;</p>
+<p class="p1">let recognition = null;</p>
+<p class="p1">if (SpeechRecognition) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>recognition = new SpeechRecognition();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>recognition.lang = 'en-US';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>recognition.interimResults = false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>recognition.maxAlternatives = 1;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// 初期化</p>
+<p class="p1">function initRoom() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>keyCountEl.innerText = totalCorrect;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>foodListEl.innerHTML = "";</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>foodData.forEach(food =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const isUnlocked = totalCorrect &gt;= food.unlockCost;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const foodEl = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>foodEl.className = 'food-item' + (isUnlocked ? '' : ' locked');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>foodEl.innerText = food.emoji;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(isUnlocked &amp;&amp; !isEvolved) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>foodEl.onclick = () =&gt; feedPartner(food);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>foodListEl.appendChild(foodEl);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function feedPartner(food) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (isEvolved) return;</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// もぐもぐアニメーション</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const msg = document.getElementById('eating-msg');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>msg.style.opacity = 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>msg.style.top = "-20px";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>partnerImg.style.animation = "none";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { partnerImg.style.transform = "scale(1.2)"; }, 100);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { partnerImg.style.transform = "scale(1)"; }, 300);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 経験値アップ (1回20%で5回で進化)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentExp += 20;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(currentExp &gt; 100) currentExp = 100;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>expText.innerText = currentExp;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>expBar.style.width = currentExp + "%";</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 進化判定</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (currentExp &gt;= 100) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(evolve, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function evolve() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>isEvolved = true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const overlay = document.getElementById('evolve-overlay');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.add('show');</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 進化後の姿に変更</p>
+<p class="p1"><span class="Apple-converted-space">  </span>partnerImg.innerText = "🔥🦊🔥";<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>partnerName.innerText = "ブースター";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.querySelector('h1').innerHTML = "えいごクイズ - セット1&lt;br&gt;（ようしょく＆ブースター）";</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// --- クイズロジック ---</p>
+<p class="p1">let roundQuestions = [];</p>
+<p class="p1">let currentQIndex = 0;</p>
+<p class="p1">let currentCorrectAnswer = null;</p>
+<p class="p2"><br></p>
+<p class="p1">document.getElementById('start-quiz-btn').onclick = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>roomView.classList.remove('active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>quizView.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>startRound();</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">function startRound() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ランダムに5問選ぶ</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const shuffled = [...wordData].sort(() =&gt; 0.5 - Math.random());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>roundQuestions = shuffled.slice(0, 5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentQIndex = 0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>showNextQuestion();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function showNextQuestion() {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (currentQIndex &gt;= roundQuestions.length) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// ラウンド終了</p>
+<p class="p1"><span class="Apple-converted-space">    </span>quizView.classList.remove('active');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>roomView.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>initRoom();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/5)`;</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const qData = roundQuestions[currentQIndex];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>currentCorrectAnswer = qData;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const contentEl = document.getElementById('quiz-content');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>contentEl.innerHTML = "";</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// クイズ形式をランダムに決定 (1: 絵+音声選択, 2: 発音, 3: スペル選択)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ※ 音声認識が未対応のブラウザでは 1 か 3 にする</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let qType = Math.floor(Math.random() * 3) + 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (!recognition &amp;&amp; qType === 2) qType = 1;</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (qType === 1) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 形式1：音声を聞いて正しい絵を選ぶ</p>
+<p class="p1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;おとをきいて、えらぼう！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="play-voice-btn"&gt;🔊&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="options-grid" id="options-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('play-voice-btn').onclick = () =&gt; playVoice(qData.en);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>createOptions(qData, contentEl.querySelector('#options-container'), true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; playVoice(qData.en), 500);</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else if (qType === 2) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 形式2：マイクで発音する</p>
+<p class="p1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;マイクをおして、えいごでいってみよう！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="question-emoji"&gt;${qData.emoji}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="question-word"&gt;${qData.en}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.2rem; color:#666;"&gt;（${qData.ja}）&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="mic-btn" id="mic-btn"&gt;🎤&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;"&gt;🔊 きく&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('play-voice-btn').onclick = () =&gt; playVoice(qData.en);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const micBtn = document.getElementById('mic-btn');</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>micBtn.onclick = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>micBtn.classList.add('listening');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>recognition.start();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.onresult = (event) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>micBtn.classList.remove('listening');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>// 5歳児向けに甘い判定（部分一致でOK）</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (spoken.includes(target) || target.includes(spoken) || spoken.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>checkAnswer(true);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>checkAnswer(false);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>recognition.onerror = () =&gt; { micBtn.classList.remove('listening'); checkAnswer(false); };</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 形式3：英語を見て正しい絵を選ぶ</p>
+<p class="p1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;えいごをよんで、えらぼう！&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="question-word" style="font-size:3.5rem; color:#E91E63;"&gt;${qData.en}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="options-grid" id="options-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>createOptions(qData, contentEl.querySelector('#options-container'), true);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function createOptions(correctData, container, useEmoji) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ダミーの選択肢を2つ選ぶ</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dummies = [...wordData].filter(w =&gt; w.en !== correctData.en).sort(() =&gt; 0.5 - Math.random()).slice(0, 2);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const options = [correctData, ...dummies].sort(() =&gt; 0.5 - Math.random());</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>options.forEach(opt =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const btn = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.className = 'option-btn';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.innerHTML = `&lt;span style="font-size:3rem;"&gt;${opt.emoji}&lt;/span&gt; &lt;span style="font-size:1.5rem;"&gt;${opt.ja}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>btn.onclick = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>checkAnswer(opt.en === correctData.en);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>container.appendChild(btn);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function playVoice(text) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const msg = new SpeechSynthesisUtterance(text);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>msg.lang = 'en-US';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>msg.rate = 0.8; // ゆっくり</p>
+<p class="p1"><span class="Apple-converted-space">  </span>window.speechSynthesis.speak(msg);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function checkAnswer(isCorrect) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const overlay = document.getElementById('feedback-overlay');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const icon = document.getElementById('feedback-icon');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const text = document.getElementById('feedback-text');</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>if (isCorrect) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>icon.innerText = "⭕";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>text.innerText = "せいかい！すごい！";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>text.style.color = "var(--correct)";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>totalCorrect++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>icon.innerText = "❌";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>text.innerText = "おしい！もういちど！";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>text.style.color = "var(--incorrect)";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>overlay.classList.add('show');</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 効果音代わりに音声を再生</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const msg = new SpeechSynthesisUtterance(isCorrect ? "Good job!" : "Oh no");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>msg.lang = 'en-US';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>window.speechSynthesis.speak(msg);</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>overlay.classList.remove('show');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (isCorrect) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>currentQIndex++;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>showNextQuestion();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}, 2000);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// 起動時の初期化</p>
+<p class="p1">initRoom();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
