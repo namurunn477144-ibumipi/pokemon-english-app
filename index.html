@@ -66,7 +66,16 @@
       cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0;
     }
     .food-item:active { transform: translateY(4px); box-shadow: 0 0 0 #E0E0E0; }
+    
+    /* ごはんのロック状態と食べたあとの状態 */
     .food-item.locked { filter: grayscale(100%) opacity(0.3); pointer-events: none; }
+    .food-item.eaten { filter: grayscale(100%) opacity(0.4); pointer-events: none; }
+    
+    .eaten-mark {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 2rem; color: #4CAF50;
+      text-shadow: 2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF;
+    }
     
     .eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }
     
@@ -125,7 +134,6 @@
 <body>
 
 <div id="app">
-  <!-- 育成ルーム画面 -->
   <div id="room-view" class="view active">
     <h1 id="main-title">えいごクイズ - セット1<br>（ようしょく＆イーブイ）</h1>
     
@@ -152,7 +160,6 @@
     <button id="reset-evo-btn" class="big-btn" style="display:none; background-color: #9C27B0; box-shadow: 0 6px 0 #7B1FA2;">イーブイにもどる🔄</button>
   </div>
 
-  <!-- クイズ画面 -->
   <div id="quiz-view" class="view">
     <div class="quiz-header">
       <div id="quiz-progress-text">だい 1 もん！ (1/4)</div>
@@ -161,13 +168,11 @@
   </div>
 </div>
 
-<!-- フィードバック画面 -->
 <div id="feedback-overlay">
   <div id="feedback-icon" class="feedback-icon">⭕</div>
   <div id="feedback-text" class="feedback-text">せいかい！</div>
 </div>
 
-<!-- 進化画面 -->
 <div id="evolve-overlay">
   <div class="evolve-sparkle">✨</div>
   <img id="evolve-image" src="" alt="しんか！">
@@ -176,48 +181,62 @@
 </div>
 
 <script>
-// 英検5級対応 大増量データ (約230語)
+// 英検5級対応 セット1 (210語)
 const wordData = [
-  // どうぶつ
+  // 1. どうぶつ
   { en: "Dog", ja: "いぬ", emoji: "🐶" }, { en: "Cat", ja: "ねこ", emoji: "🐱" }, { en: "Rabbit", ja: "うさぎ", emoji: "🐰" }, { en: "Elephant", ja: "ぞう", emoji: "🐘" }, { en: "Lion", ja: "ライオン", emoji: "🦁" },
   { en: "Tiger", ja: "とら", emoji: "🐯" }, { en: "Bear", ja: "くま", emoji: "🐻" }, { en: "Monkey", ja: "さる", emoji: "🐵" }, { en: "Mouse", ja: "ねずみ", emoji: "🐭" }, { en: "Cow", ja: "うし", emoji: "🐮" },
   { en: "Pig", ja: "ぶた", emoji: "🐷" }, { en: "Horse", ja: "うま", emoji: "🐴" }, { en: "Sheep", ja: "ひつじ", emoji: "🐑" }, { en: "Bird", ja: "とり", emoji: "🐦" }, { en: "Penguin", ja: "ペンギン", emoji: "🐧" },
-  // たべもの・のみもの
+  { en: "Duck", ja: "あひる", emoji: "🦆" }, { en: "Chicken", ja: "にわとり", emoji: "🐔" }, { en: "Frog", ja: "かえる", emoji: "🐸" }, { en: "Snake", ja: "へび", emoji: "🐍" }, { en: "Turtle", ja: "かめ", emoji: "🐢" },
+  { en: "Fish", ja: "さかな", emoji: "🐟" }, { en: "Shark", ja: "さめ", emoji: "🦈" }, { en: "Whale", ja: "くじら", emoji: "🐳" }, { en: "Dolphin", ja: "いるか", emoji: "🐬" }, { en: "Octopus", ja: "たこ", emoji: "🐙" },
+  // 2. たべもの・のみもの
   { en: "Apple", ja: "りんご", emoji: "🍎" }, { en: "Banana", ja: "バナナ", emoji: "🍌" }, { en: "Orange", ja: "オレンジ", emoji: "🍊" }, { en: "Grape", ja: "ぶどう", emoji: "🍇" }, { en: "Strawberry", ja: "いちご", emoji: "🍓" },
-  { en: "Tomato", ja: "トマト", emoji: "🍅" }, { en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Bread", ja: "パン", emoji: "🍞" }, { en: "Rice", ja: "ごはん", emoji: "🍚" },
-  { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" }, { en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" }, { en: "Ice cream", ja: "アイス", emoji: "🍦" }, { en: "Water", ja: "みず", emoji: "💧" },
-  { en: "Milk", ja: "ぎゅうにゅう", emoji: "🥛" }, { en: "Tea", ja: "おちゃ", emoji: "🍵" }, { en: "Juice", ja: "ジュース", emoji: "🧃" }, { en: "Egg", ja: "たまご", emoji: "🥚" }, { en: "Meat", ja: "おにく", emoji: "🍖" },
-  // のりもの
+  { en: "Peach", ja: "もも", emoji: "🍑" }, { en: "Melon", ja: "メロン", emoji: "🍈" }, { en: "Watermelon", ja: "すいか", emoji: "🍉" }, { en: "Cherry", ja: "さくらんぼ", emoji: "🍒" }, { en: "Tomato", ja: "トマト", emoji: "🍅" },
+  { en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Onion", ja: "たまねぎ", emoji: "🧅" }, { en: "Corn", ja: "とうもろこし", emoji: "🌽" }, { en: "Bread", ja: "パン", emoji: "🍞" },
+  { en: "Rice", ja: "ごはん", emoji: "🍚" }, { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" }, { en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Hot dog", ja: "ホットドッグ", emoji: "🌭" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" },
+  { en: "Ice cream", ja: "アイス", emoji: "🍦" }, { en: "Chocolate", ja: "チョコレート", emoji: "🍫" }, { en: "Cookie", ja: "クッキー", emoji: "🍪" }, { en: "Candy", ja: "キャンディ", emoji: "🍬" }, { en: "Water", ja: "みず", emoji: "💧" },
+  { en: "Milk", ja: "ぎゅうにゅう", emoji: "🥛" }, { en: "Tea", ja: "おちゃ", emoji: "🍵" }, { en: "Coffee", ja: "コーヒー", emoji: "☕" }, { en: "Juice", ja: "ジュース", emoji: "🧃" }, { en: "Egg", ja: "たまご", emoji: "🥚" }, { en: "Meat", ja: "おにく", emoji: "🍖" },
+  // 3. のりもの
   { en: "Car", ja: "くるま", emoji: "🚗" }, { en: "Bus", ja: "バス", emoji: "🚌" }, { en: "Taxi", ja: "タクシー", emoji: "🚕" }, { en: "Train", ja: "でんしゃ", emoji: "🚃" }, { en: "Airplane", ja: "ひこうき", emoji: "✈️" },
-  { en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" },
-  // いろ
+  { en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" }, { en: "Truck", ja: "トラック", emoji: "🚚" },
+  { en: "Fire engine", ja: "しょうぼうしゃ", emoji: "🚒" }, { en: "Police car", ja: "パトカー", emoji: "🚓" }, { en: "Ambulance", ja: "きゅうきゅうしゃ", emoji: "🚑" }, { en: "Helicopter", ja: "ヘリコプター", emoji: "🚁" },
+  // 4. いろ
   { en: "Red", ja: "あか", emoji: "🔴" }, { en: "Blue", ja: "あお", emoji: "🔵" }, { en: "Yellow", ja: "きいろ", emoji: "🟡" }, { en: "Green", ja: "みどり", emoji: "🟢" }, { en: "Purple", ja: "むらさき", emoji: "🟣" },
   { en: "Pink", ja: "ピンク", emoji: "🌸" }, { en: "Brown", ja: "ちゃいろ", emoji: "🟤" }, { en: "Black", ja: "くろ", emoji: "⚫" }, { en: "White", ja: "しろ", emoji: "⚪" },
-  // かず
+  // 5. かず
   { en: "One", ja: "いち", emoji: "1️⃣" }, { en: "Two", ja: "に", emoji: "2️⃣" }, { en: "Three", ja: "さん", emoji: "3️⃣" }, { en: "Four", ja: "よん", emoji: "4️⃣" }, { en: "Five", ja: "ご", emoji: "5️⃣" },
   { en: "Six", ja: "ろく", emoji: "6️⃣" }, { en: "Seven", ja: "なな", emoji: "7️⃣" }, { en: "Eight", ja: "はち", emoji: "8️⃣" }, { en: "Nine", ja: "きゅう", emoji: "9️⃣" }, { en: "Ten", ja: "じゅう", emoji: "🔟" },
-  // かぞく・ひと
+  // 6. ひと・かぞく
   { en: "Father", ja: "おとうさん", emoji: "👨" }, { en: "Mother", ja: "おかあさん", emoji: "👩" }, { en: "Brother", ja: "おにいちゃん", emoji: "👦" }, { en: "Sister", ja: "おねえちゃん", emoji: "👧" }, { en: "Baby", ja: "あかちゃん", emoji: "👶" },
   { en: "Grandfather", ja: "おじいちゃん", emoji: "👴" }, { en: "Grandmother", ja: "おばあちゃん", emoji: "👵" }, { en: "Friend", ja: "ともだち", emoji: "🧑‍🤝‍🧑" }, { en: "Boy", ja: "おとこのこ", emoji: "👦" }, { en: "Girl", ja: "おんなのこ", emoji: "👧" },
-  // みのまわりのもの・ばしょ
-  { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Pen", ja: "ペン", emoji: "🖊️" }, { en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Bag", ja: "かばん", emoji: "🎒" },
-  { en: "Hat", ja: "ぼうし", emoji: "🧢" }, { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Bed", ja: "ベッド", emoji: "🛏️" },
-  { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Phone", ja: "でんわ", emoji: "📱" }, { en: "Computer", ja: "パソコン", emoji: "💻" }, { en: "TV", ja: "テレビ", emoji: "📺" }, { en: "House", ja: "いえ", emoji: "🏠" },
-  { en: "Room", ja: "へや", emoji: "🚪" }, { en: "Window", ja: "まど", emoji: "🪟" }, { en: "School", ja: "がっこう", emoji: "🏫" }, { en: "Park", ja: "こうえん", emoji: "⛲" }, { en: "Station", ja: "えき", emoji: "🚉" },
-  { en: "Store", ja: "おみせ", emoji: "🏪" }, { en: "Hospital", ja: "びょういん", emoji: "🏥" },
-  // どうし（英検5級で超重要！）
-  { en: "Play", ja: "あそぶ", emoji: "⚽" }, { en: "Run", ja: "はしる", emoji: "🏃" }, { en: "Walk", ja: "あるく", emoji: "🚶" }, { en: "Swim", ja: "およぐ", emoji: "🏊" }, { en: "Eat", ja: "たべる", emoji: "😋" },
-  { en: "Drink", ja: "のむ", emoji: "🥤" }, { en: "Read", ja: "よむ", emoji: "📚" }, { en: "Write", ja: "かく", emoji: "✍️" }, { en: "Speak", ja: "はなす", emoji: "🗣️" }, { en: "Listen", ja: "きく", emoji: "🎧" },
-  { en: "See", ja: "みる", emoji: "👀" }, { en: "Sing", ja: "うたう", emoji: "🎤" }, { en: "Dance", ja: "おどる", emoji: "💃" }, { en: "Sleep", ja: "ねる", emoji: "😴" }, { en: "Wake up", ja: "おきる", emoji: "🥱" },
-  { en: "Study", ja: "べんきょうする", emoji: "📝" }, { en: "Wash", ja: "あらう", emoji: "🧼" }, { en: "Make", ja: "つくる", emoji: "🛠️" }, { en: "Have", ja: "もっている", emoji: "🤲" }, { en: "Like", ja: "すき", emoji: "❤️" },
-  // けいようし（英検5級で超重要！）
+  { en: "Man", ja: "おとこのひと", emoji: "👨‍💼" }, { en: "Woman", ja: "おんなのひと", emoji: "👩‍💼" }, { en: "Teacher", ja: "せんせい", emoji: "🧑‍🏫" }, { en: "Student", ja: "せいと", emoji: "🎒" }, { en: "Doctor", ja: "おいしゃさん", emoji: "🧑‍⚕️" },
+  // 7. みのまわりのもの
+  { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Notebook", ja: "ノート", emoji: "📓" }, { en: "Pen", ja: "ペン", emoji: "🖊️" }, { en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Eraser", ja: "けしごむ", emoji: "🧽" },
+  { en: "Ruler", ja: "じょうぎ", emoji: "📏" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Chair", ja: "いす", emoji: "💺" }, { en: "Bag", ja: "かばん", emoji: "🎒" }, { en: "Hat", ja: "ぼうし", emoji: "🧢" },
+  { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Socks", ja: "くつした", emoji: "🧦" }, { en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Skirt", ja: "スカート", emoji: "👗" },
+  { en: "Bed", ja: "ベッド", emoji: "🛏️" }, { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Watch", ja: "うでどけい", emoji: "⌚" }, { en: "Phone", ja: "でんわ", emoji: "📱" }, { en: "Computer", ja: "パソコン", emoji: "💻" },
+  { en: "TV", ja: "テレビ", emoji: "📺" }, { en: "Camera", ja: "カメラ", emoji: "📷" }, { en: "Box", ja: "はこ", emoji: "📦" }, { en: "Cup", ja: "カップ", emoji: "🍵" }, { en: "Glass", ja: "グラス", emoji: "🥛" },
+  { en: "Plate", ja: "おさら", emoji: "🍽️" }, { en: "Spoon", ja: "スプーン", emoji: "🥄" }, { en: "Fork", ja: "フォーク", emoji: "🍴" }, { en: "Knife", ja: "ナイフ", emoji: "🔪" }, { en: "House", ja: "いえ", emoji: "🏠" },
+  // 8. ばしょ・しぜん
+  { en: "School", ja: "がっこう", emoji: "🏫" }, { en: "Park", ja: "こうえん", emoji: "⛲" }, { en: "Store", ja: "おみせ", emoji: "🏪" }, { en: "Hospital", ja: "びょういん", emoji: "🏥" }, { en: "Bank", ja: "ぎんこう", emoji: "🏦" },
+  { en: "Post office", ja: "ゆうびんきょく", emoji: "🏤" }, { en: "Library", ja: "としょかん", emoji: "📚" }, { en: "Zoo", ja: "どうぶつえん", emoji: "🦒" }, { en: "Sea", ja: "うみ", emoji: "🌊" }, { en: "River", ja: "かわ", emoji: "🏞️" },
+  { en: "Mountain", ja: "やま", emoji: "⛰️" }, { en: "Tree", ja: "き", emoji: "🌲" }, { en: "Flower", ja: "はな", emoji: "🌷" }, { en: "Sun", ja: "たいよう", emoji: "☀️" }, { en: "Moon", ja: "つき", emoji: "🌙" },
+  { en: "Star", ja: "ほし", emoji: "⭐" }, { en: "Sky", ja: "そら", emoji: "☁️" }, { en: "Rain", ja: "あめ", emoji: "🌧️" }, { en: "Snow", ja: "ゆき", emoji: "⛄" }, { en: "Wind", ja: "かぜ", emoji: "💨" },
+  // 9. どうし（動き）
+  { en: "Play", ja: "あそぶ", emoji: "⚽" }, { en: "Run", ja: "はしる", emoji: "🏃" }, { en: "Walk", ja: "あるく", emoji: "🚶" }, { en: "Swim", ja: "およぐ", emoji: "🏊" }, { en: "Jump", ja: "ジャンプする", emoji: "🦘" },
+  { en: "Eat", ja: "たべる", emoji: "😋" }, { en: "Drink", ja: "のむ", emoji: "🥤" }, { en: "Read", ja: "よむ", emoji: "📖" }, { en: "Write", ja: "かく", emoji: "✍️" }, { en: "Speak", ja: "はなす", emoji: "🗣️" },
+  { en: "Listen", ja: "きく", emoji: "🎧" }, { en: "See", ja: "みる", emoji: "👀" }, { en: "Look", ja: "みる", emoji: "👁️" }, { en: "Watch", ja: "みる（テレビなど）", emoji: "📺" }, { en: "Sing", ja: "うたう", emoji: "🎤" },
+  { en: "Dance", ja: "おどる", emoji: "💃" }, { en: "Sleep", ja: "ねる", emoji: "😴" }, { en: "Wake up", ja: "おきる", emoji: "🥱" }, { en: "Study", ja: "べんきょうする", emoji: "📝" }, { en: "Wash", ja: "あらう", emoji: "🧼" },
+  { en: "Make", ja: "つくる", emoji: "🛠️" }, { en: "Have", ja: "もっている", emoji: "🤲" }, { en: "Like", ja: "すき", emoji: "❤️" }, { en: "Go", ja: "いく", emoji: "➡️" }, { en: "Come", ja: "くる", emoji: "⬅️" },
+  // 10. けいようし（様子）
   { en: "Big", ja: "おおきい", emoji: "🐘" }, { en: "Small", ja: "ちいさい", emoji: "🐭" }, { en: "Long", ja: "ながい", emoji: "📏" }, { en: "Short", ja: "みじかい", emoji: "✂️" }, { en: "Tall", ja: "せがたかい", emoji: "🦒" },
   { en: "New", ja: "あたらしい", emoji: "✨" }, { en: "Old", ja: "ふるい", emoji: "🏚️" }, { en: "Good", ja: "よい", emoji: "👍" }, { en: "Bad", ja: "わるい", emoji: "👎" }, { en: "Hot", ja: "あつい", emoji: "🔥" },
   { en: "Cold", ja: "さむい", emoji: "❄️" }, { en: "Warm", ja: "あたたかい", emoji: "☕" }, { en: "Cool", ja: "すずしい", emoji: "🍃" }, { en: "Fast", ja: "はやい", emoji: "🏎️" }, { en: "Slow", ja: "おそい", emoji: "🐢" },
   { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" },
-  // あいさつ
-  { en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good night", ja: "おやすみ", emoji: "🌃" }, { en: "Goodbye", ja: "さようなら", emoji: "👋" },
-  { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" }, { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" }
+  // 11. あいさつ
+  { en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good afternoon", ja: "こんにちは", emoji: "🏙️" }, { en: "Good evening", ja: "こんばんは", emoji: "🌃" },
+  { en: "Good night", ja: "おやすみ", emoji: "😴" }, { en: "Goodbye", ja: "さようなら", emoji: "👋" }, { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" },
+  { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" }
 ];
 
 // 洋食ごはん 20種類データ
@@ -241,7 +260,6 @@ let isEvolved = false;
 let currentPartner = { name: "イーブイ", file: "i-bui.png" };
 let activeFoods = [];
 
-// 音声読み込み
 let synthVoices = [];
 window.speechSynthesis.onvoiceschanged = () => { synthVoices = window.speechSynthesis.getVoices(); };
 
@@ -277,11 +295,11 @@ function loadGameState() {
   }
 }
 
-// 4問正解で1つ解放 (4, 8, 12, 16, 20) に変更
+// 4問正解で1つ解放。各ごはんに「まだ食べてない（isEaten: false）」のデータを追加。
 function selectRandomFoods() {
   const shuffledFoods = [...allFoods].sort(() => 0.5 - Math.random()).slice(0, 5);
   activeFoods = shuffledFoods.map((food, index) => {
-    return { ...food, unlockCost: (index + 1) * 4 }; 
+    return { ...food, unlockCost: (index + 1) * 4, isEaten: false }; 
   });
   saveGameState();
 }
@@ -306,21 +324,37 @@ function initRoom() {
     resetBtn.style.display = 'none'; 
   }
   
-  activeFoods.forEach(food => {
+  activeFoods.forEach((food, index) => {
     const isUnlocked = totalCorrect >= food.unlockCost;
     const foodEl = document.createElement('div');
-    foodEl.className = 'food-item' + (isUnlocked ? '' : ' locked');
-    foodEl.innerText = food.emoji;
     
-    if(isUnlocked && !isEvolved) {
-      foodEl.onclick = () => feedPartner(food);
+    // 食べたか、まだロックされているか、あげられる状態かで見た目を変える
+    if (food.isEaten) {
+      foodEl.className = 'food-item eaten';
+      foodEl.innerHTML = `${food.emoji}<div class="eaten-mark">✔️</div>`;
+    } else if (!isUnlocked) {
+      foodEl.className = 'food-item locked';
+      foodEl.innerText = food.emoji;
+    } else {
+      foodEl.className = 'food-item';
+      foodEl.innerText = food.emoji;
+      
+      // まだ食べてなくて進化してない時だけタップできる
+      if (!isEvolved) {
+        foodEl.onclick = () => feedPartner(index);
+      }
     }
+    
     foodListEl.appendChild(foodEl);
   });
 }
 
-function feedPartner(food) {
+function feedPartner(index) {
   if (isEvolved) return;
+  if (activeFoods[index].isEaten) return;
+  
+  // 食べたことにする
+  activeFoods[index].isEaten = true;
   
   const msg = document.getElementById('eating-msg');
   msg.style.opacity = 1;
@@ -330,12 +364,14 @@ function feedPartner(food) {
   setTimeout(() => { partnerImg.style.transform = "scale(1)"; }, 300);
   setTimeout(() => { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);
   
+  // 1つで20%増える（5つ全部あげると100%になる）
   currentExp += 20;
   if(currentExp > 100) currentExp = 100;
   expText.innerText = currentExp;
   expBar.style.width = currentExp + "%";
   
   saveGameState(); 
+  initRoom(); // 画面を更新して✔️マークをつける
   
   if (currentExp >= 100) {
     setTimeout(evolve, 1000);
@@ -357,15 +393,14 @@ function evolve() {
   initRoom();
 }
 
+// ポップアップを消して、ボタンを押したらすぐにリセットされるように変更
 resetBtn.onclick = () => {
-  if (confirm("イーブイにもどって、いちから やりなおす？\n（あつめた ごはんの カギも リセットされるよ！）")) {
-    isEvolved = false;
-    currentExp = 0;
-    totalCorrect = 0; 
-    currentPartner = { name: "イーブイ", file: "i-bui.png" };
-    selectRandomFoods(); 
-    initRoom();
-  }
+  isEvolved = false;
+  currentExp = 0;
+  totalCorrect = 0; 
+  currentPartner = { name: "イーブイ", file: "i-bui.png" };
+  selectRandomFoods(); 
+  initRoom();
 };
 
 // --- クイズロジック ---
@@ -379,7 +414,6 @@ document.getElementById('start-quiz-btn').onclick = () => {
 };
 
 function startRound() {
-  // 1セット4問をランダムに選ぶ
   const shuffled = [...wordData].sort(() => 0.5 - Math.random());
   roundQuestions = shuffled.slice(0, 4);
   currentQIndex = 0;
@@ -402,12 +436,11 @@ function showNextQuestion() {
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   
-  // 問題形式を順番に固定 (1:リスニング, 2:スピーキング, 3:リーディング, 4:英単語えらび)
+  // 1:リスニング, 2:スピーキング, 3:リーディング, 4:英単語えらび
   let qType = currentQIndex + 1; 
-  if (!SpeechRecognition && qType === 2) qType = 1; // マイク非対応時はリスニングにする
+  if (!SpeechRecognition && qType === 2) qType = 1; 
   
   if (qType === 1) {
-    // 形式1：おとをきいて、えらぼう (リスニング)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">おとをきいて、えらぼう！</p>
       <button id="play-voice-btn">🔊</button>
@@ -418,7 +451,6 @@ function showNextQuestion() {
     setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else if (qType === 2) {
-    // 形式2：マイクでお話し (スピーキング ＆ おうちのひとOKボタン)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">マイクでおして、えいごでいってみよう！</p>
       <div class="question-emoji">${qData.emoji}</div>
@@ -433,8 +465,6 @@ function showNextQuestion() {
       </div>
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
-    
-    // 親OKボタンの処理
     document.getElementById('parent-ok-btn').onclick = () => checkAnswer(true);
 
     const micBtn = document.getElementById('mic-btn');
@@ -468,7 +498,6 @@ function showNextQuestion() {
     setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else if (qType === 3) {
-    // 形式3：えいごをよんで、えらぼう (リーディング)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">えいごをよんで、えらぼう！</p>
       <button id="play-voice-btn" style="margin-bottom:10px;">🔊</button>
@@ -480,19 +509,16 @@ function showNextQuestion() {
     setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else {
-    // 形式4：にほんごをみて、えいごをえらぼう (英単語えらび)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">にほんごをみて、えいごをえらぼう！</p>
       <div class="question-emoji" style="font-size:4rem; margin:5px 0;">${qData.emoji}</div>
       <div class="question-word" style="font-size:2rem; margin:5px 0;">${qData.ja}</div>
       <div class="options-grid" id="options-container"></div>
     `;
-    // この形式だけ、選択肢を「英語のテキスト」にする
     createTextOptions(qData, contentEl.querySelector('#options-container'));
   }
 }
 
-// 選択肢（絵と日本語）を作る関数
 function createPictureOptions(correctData, container) {
   const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
   const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
@@ -506,7 +532,6 @@ function createPictureOptions(correctData, container) {
   });
 }
 
-// 選択肢（英語のテキスト）を作る関数
 function createTextOptions(correctData, container) {
   const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
   const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
@@ -514,12 +539,9 @@ function createTextOptions(correctData, container) {
   options.forEach(opt => {
     const btn = document.createElement('div');
     btn.className = 'option-btn';
-    // 英語を大きな文字で表示
     btn.innerHTML = `<span style="font-size:2rem; font-weight:bold;">${opt.en}</span>`;
     btn.onclick = () => {
-      // 押したときに英語を読み上げる
       speakCuteVoice(opt.en); 
-      // 0.5秒後に正誤判定
       setTimeout(() => checkAnswer(opt.en === correctData.en), 500);
     };
     container.appendChild(btn);
