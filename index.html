@@ -1,478 +1,456 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; -webkit-text-stroke: #000000; min-height: 15.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Hiragino Sans'; -webkit-text-stroke: #000000}
-    span.s1 {font-kerning: none}
-    span.s2 {font: 13.0px 'Hiragino Sans'; font-kerning: none}
-    span.s3 {font: 13.0px 'Lucida Grande'; font-kerning: none}
-    span.s4 {font: 13.0px 'Apple Color Emoji'; font-kerning: none}
-    span.s5 {font: 13.0px 'Helvetica Neue'; font-kerning: none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>えいごクイズ - セット1（洋食＆イーブイ）</title>
+  <style>
+    :root {
+      --primary: #FFB347;
+      --secondary: #FFCC33;
+      --bg: #FFF9E6;
+      --text: #5D4037;
+      --correct: #4CAF50;
+      --incorrect: #FF9800;
+      --btn-shadow: #E6A100;
+    }
+    
+    * { box-sizing: border-box; font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', 'Meiryo', sans-serif; }
+    
+    body {
+      margin: 0; padding: 0; background-color: var(--bg); color: var(--text);
+      text-align: center; overflow-x: hidden; touch-action: manipulation;
+    }
+    
+    h1, h2, h3, p { margin: 10px 0; }
+    h1 { font-size: 1.5rem; color: #D84315; }
+    
+    .view { display: none; padding: 20px 10px; min-height: 100vh; flex-direction: column; align-items: center; }
+    .view.active { display: flex; }
+    
+    /* ボタン共通スタイル */
+    .big-btn {
+      background-color: var(--primary); color: white; border: none;
+      border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold;
+      box-shadow: 0 6px 0 var(--btn-shadow); cursor: pointer; margin: 10px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .big-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--btn-shadow); }
+    
+    /* ルーム（育成）画面 */
+    #partner-container { position: relative; margin: 20px 0; }
+    #partner-image {
+      font-size: 7rem; margin: 0; padding: 20px;
+      animation: float 3s ease-in-out infinite;
+      /* ▼ 好きな画像にする場合は、この div の中身を <img src="URL" alt="イーブイ" style="width:150px;"> に変更してください ▼ */
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    #partner-name { font-size: 1.8rem; font-weight: bold; }
+    
+    .exp-container { width: 90%; max-width: 400px; margin: 10px 0; }
+    .exp-label { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }
+    .exp-bar-bg { background-color: #E0E0E0; border-radius: 15px; height: 30px; overflow: hidden; position: relative; border: 3px solid #FFF;}
+    .exp-bar-fill {
+      background: linear-gradient(90deg, #FF9800, #FFC107);
+      height: 100%; width: 0%; transition: width 0.5s ease-out;
+    }
+    
+    .food-section { width: 90%; max-width: 400px; background: white; border-radius: 20px; padding: 15px; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .food-list { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
+    .food-item {
+      font-size: 2.5rem; background: var(--bg); border-radius: 15px; padding: 10px;
+      width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;
+      cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0;
+    }
+    .food-item:active { transform: translateY(4px); box-shadow: 0 0 0 #E0E0E0; }
+    .food-item.locked { filter: grayscale(100%) opacity(0.3); pointer-events: none; }
+    
+    .eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }
+    
+    /* クイズ画面 */
+    .quiz-header { margin-bottom: 20px; }
+    #quiz-progress-text { font-size: 1.6rem; font-weight: bold; }
+    #quiz-content { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    
+    .question-emoji { font-size: 5rem; margin: 10px 0; }
+    .question-word { font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #333; }
+    
+    .options-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .option-btn {
+      background: #FFF; border: 4px solid var(--primary); border-radius: 15px;
+      padding: 15px; font-size: 2rem; display: flex; justify-content: center; align-items: center; gap: 10px;
+      box-shadow: 0 4px 0 var(--primary); cursor: pointer; transition: 0.1s;
+    }
+    .option-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary); }
+    
+    .mic-btn {
+      background: #E91E63; box-shadow: 0 6px 0 #C2185B; color: white;
+      border: none; border-radius: 50%; width: 100px; height: 100px; font-size: 3rem;
+      margin: 20px auto; cursor: pointer; display: flex; justify-content: center; align-items: center;
+    }
+    .mic-btn.listening { animation: pulse 1s infinite; background: #F44336; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    
+    #play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}
+    
+    /* フィードバック (正解・不正解) */
+    #feedback-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      display: flex; justify-content: center; align-items: center; flex-direction: column;
+      z-index: 100; background: rgba(255,255,255,0.9); opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    #feedback-overlay.show { opacity: 1; pointer-events: auto; }
+    .feedback-icon { font-size: 10rem; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }
+    @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+    
+    /* 進化演出 */
+    #evolve-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s;
+    }
+    #evolve-overlay.show { opacity: 1; pointer-events: auto; }
+    .evolve-sparkle { font-size: 5rem; animation: spin 2s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html lang="ja"&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="robots" content="noindex, nofollow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;</span><span class="s2">えいごクイズ</span><span class="s1"> - </span><span class="s2">セット</span><span class="s1">1</span><span class="s2">（洋食＆イーブイ）</span><span class="s1">&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>:root {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--primary: #FFB347;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--secondary: #FFCC33;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--bg: #FFF9E6;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--text: #5D4037;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--correct: #4CAF50;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--incorrect: #FF9800;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--btn-shadow: #E6A100;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>* { box-sizing: border-box; font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', 'Meiryo', sans-serif; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin: 0; padding: 0; background-color: var(--bg); color: var(--text);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>text-align: center; overflow-x: hidden; touch-action: manipulation;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h1, h2, h3, p { margin: 10px 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h1 { font-size: 1.5rem; color: #D84315; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.view { display: none; padding: 20px 10px; min-height: 100vh; flex-direction: column; align-items: center; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.view.active { display: flex; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>/* </span><span class="s2">ボタン共通スタイル</span><span class="s1"> */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.big-btn {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background-color: var(--primary); color: white; border: none;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>box-shadow: 0 6px 0 var(--btn-shadow); cursor: pointer; margin: 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>transition: transform 0.1s, box-shadow 0.1s;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.big-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--btn-shadow); }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>/* </span><span class="s2">ルーム（育成）画面</span><span class="s1"> */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#partner-container { position: relative; margin: 20px 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#partner-image {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 7rem; margin: 0; padding: 20px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>animation: float 3s ease-in-out infinite;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>/* </span><span class="s3">▼</span><span class="s1"> </span><span class="s2">好きな画像にする場合は、この</span><span class="s1"> div </span><span class="s2">の中身を</span><span class="s1"> &lt;img src="URL" alt="</span><span class="s2">イーブイ</span><span class="s1">" style="width:150px;"&gt; </span><span class="s2">に変更してください</span><span class="s1"> </span><span class="s3">▼</span><span class="s1"> */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@keyframes float {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>0% { transform: translateY(0px); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>50% { transform: translateY(-10px); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>100% { transform: translateY(0px); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#partner-name { font-size: 1.8rem; font-weight: bold; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.exp-container { width: 90%; max-width: 400px; margin: 10px 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.exp-label { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.exp-bar-bg { background-color: #E0E0E0; border-radius: 15px; height: 30px; overflow: hidden; position: relative; border: 3px solid #FFF;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.exp-bar-fill {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: linear-gradient(90deg, #FF9800, #FFC107);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>height: 100%; width: 0%; transition: width 0.5s ease-out;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.food-section { width: 90%; max-width: 400px; background: white; border-radius: 20px; padding: 15px; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.food-list { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.food-item {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size: 2.5rem; background: var(--bg); border-radius: 15px; padding: 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.food-item:active { transform: translateY(4px); box-shadow: 0 0 0 #E0E0E0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.food-item.locked { filter: grayscale(100%) opacity(0.3); pointer-events: none; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>/* </span><span class="s2">クイズ画面</span><span class="s1"> */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.quiz-header { margin-bottom: 20px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#quiz-progress-text { font-size: 1.6rem; font-weight: bold; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#quiz-content { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.question-emoji { font-size: 5rem; margin: 10px 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.question-word { font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #333; }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.options-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.option-btn {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: #FFF; border: 4px solid var(--primary); border-radius: 15px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding: 15px; font-size: 2rem; display: flex; justify-content: center; align-items: center; gap: 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 0 var(--primary); cursor: pointer; transition: 0.1s;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.option-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary); }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.mic-btn {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: #E91E63; box-shadow: 0 6px 0 #C2185B; color: white;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border: none; border-radius: 50%; width: 100px; height: 100px; font-size: 3rem;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin: 20px auto; cursor: pointer; display: flex; justify-content: center; align-items: center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.mic-btn.listening { animation: pulse 1s infinite; background: #F44336; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>/* </span><span class="s2">フィードバック</span><span class="s1"> (</span><span class="s2">正解・不正解</span><span class="s1">) */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#feedback-overlay {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display: flex; justify-content: center; align-items: center; flex-direction: column;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>z-index: 100; background: rgba(255,255,255,0.9); opacity: 0; pointer-events: none; transition: opacity 0.3s;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#feedback-overlay.show { opacity: 1; pointer-events: auto; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.feedback-icon { font-size: 10rem; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>/* </span><span class="s2">進化演出</span><span class="s1"> */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#evolve-overlay {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>#evolve-overlay.show { opacity: 1; pointer-events: auto; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.evolve-sparkle { font-size: 5rem; animation: spin 2s linear infinite; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@keyframes spin { 100% { transform: rotate(360deg); } }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;div id="app"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- </span><span class="s2">育成ルーム画面</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="room-view" class="view active"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;h1&gt;</span><span class="s2">えいごクイズ</span><span class="s1"> - </span><span class="s2">セット</span><span class="s1">1&lt;br&gt;</span><span class="s2">（ようしょく＆イーブイ）</span><span class="s1">&lt;/h1&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="partner-container"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div id="partner-image"&gt;</span><span class="s4">🦊</span><span class="s1">&lt;/div&gt;<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div id="partner-name"&gt;</span><span class="s2">イーブイ</span><span class="s1">&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div id="eating-msg" class="eating-msg"&gt;</span><span class="s2">もぐもぐ</span><span class="s1">♪&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="exp-container"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="exp-label"&gt;</span><span class="s2">なかよしど</span><span class="s1">: &lt;span id="exp-text"&gt;0&lt;/span&gt;%&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="exp-bar-bg"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">         </span>&lt;div id="exp-bar" class="exp-bar-fill"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="food-section"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size: 1.2rem; font-weight: bold;"&gt;</span><span class="s2">ごはん（かぎ</span><span class="s4">🔑</span><span class="s1">: &lt;span id="key-count"&gt;0&lt;/span&gt;</span><span class="s2">）</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size: 0.9rem; color: #777;"&gt;</span><span class="s2">２もんせいかいで、ごはんが１つひらくよ！</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div id="food-list" class="food-list"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;!-- </span><span class="s2">ごはんアイテムがここに生成されます</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;button id="start-quiz-btn" class="big-btn"&gt;</span><span class="s2">クイズをする</span><span class="s1"> (5</span><span class="s2">もん</span><span class="s1">)&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;!-- </span><span class="s2">クイズ画面</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="quiz-view" class="view"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="quiz-header"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div id="quiz-progress-text"&gt;</span><span class="s2">だい</span><span class="s1"> 1 </span><span class="s2">もん！</span><span class="s1"> (1/5)&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="quiz-content"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">       </span>&lt;!-- JS</span><span class="s2">でクイズの</span><span class="s1">HTML</span><span class="s2">を書き換えます</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;!-- </span><span class="s2">フィードバック画面</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1">&lt;div id="feedback-overlay"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="feedback-icon" class="feedback-icon"&gt;</span><span class="s4">⭕</span><span class="s1">&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div id="feedback-text" class="feedback-text"&gt;</span><span class="s2">せいかい！</span><span class="s1">&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;!-- </span><span class="s2">進化画面</span><span class="s1"> --&gt;</span></p>
-<p class="p1"><span class="s1">&lt;div id="evolve-overlay"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div class="evolve-sparkle"&gt;</span><span class="s4">✨</span><span class="s1">&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div style="font-size: 7rem; margin: 20px;" id="evolve-image"&gt;</span><span class="s4">🔥🦊🔥</span><span class="s1">&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2 style="font-size: 2.5rem; color: #D84315;"&gt;</span><span class="s2">おめでとう！</span><span class="s1">&lt;br&gt;</span><span class="s2">ブースターにしんかした！</span><span class="s1">&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;button class="big-btn" onclick="document.getElementById('evolve-overlay').classList.remove('show')"&gt;</span><span class="s2">もどる</span><span class="s1">&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;script&gt;</span></p>
-<p class="p1"><span class="s1">// </span><span class="s2">問題データ</span><span class="s1"> (150</span><span class="s2">問</span><span class="s1">)</span></p>
-<p class="p1"><span class="s1">const wordData = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">どうぶつ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Dog", ja: "</span><span class="s2">いぬ</span><span class="s1">", emoji: "</span><span class="s4">🐶</span><span class="s1">" }, { en: "Cat", ja: "</span><span class="s2">ねこ</span><span class="s1">", emoji: "</span><span class="s4">🐱</span><span class="s1">" }, { en: "Rabbit", ja: "</span><span class="s2">うさぎ</span><span class="s1">", emoji: "</span><span class="s4">🐰</span><span class="s1">" }, { en: "Elephant", ja: "</span><span class="s2">ぞう</span><span class="s1">", emoji: "</span><span class="s4">🐘</span><span class="s1">" }, { en: "Lion", ja: "</span><span class="s2">ライオン</span><span class="s1">", emoji: "</span><span class="s4">🦁</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Tiger", ja: "</span><span class="s2">とら</span><span class="s1">", emoji: "</span><span class="s4">🐯</span><span class="s1">" }, { en: "Bear", ja: "</span><span class="s2">くま</span><span class="s1">", emoji: "</span><span class="s4">🐻</span><span class="s1">" }, { en: "Monkey", ja: "</span><span class="s2">さる</span><span class="s1">", emoji: "</span><span class="s4">🐵</span><span class="s1">" }, { en: "Mouse", ja: "</span><span class="s2">ねずみ</span><span class="s1">", emoji: "</span><span class="s4">🐭</span><span class="s1">" }, { en: "Cow", ja: "</span><span class="s2">うし</span><span class="s1">", emoji: "</span><span class="s4">🐮</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Pig", ja: "</span><span class="s2">ぶた</span><span class="s1">", emoji: "</span><span class="s4">🐷</span><span class="s1">" }, { en: "Horse", ja: "</span><span class="s2">うま</span><span class="s1">", emoji: "</span><span class="s4">🐴</span><span class="s1">" }, { en: "Sheep", ja: "</span><span class="s2">ひつじ</span><span class="s1">", emoji: "</span><span class="s4">🐑</span><span class="s1">" }, { en: "Bird", ja: "</span><span class="s2">とり</span><span class="s1">", emoji: "</span><span class="s4">🐦</span><span class="s1">" }, { en: "Penguin", ja: "</span><span class="s2">ペンギン</span><span class="s1">", emoji: "</span><span class="s4">🐧</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Duck", ja: "</span><span class="s2">あひる</span><span class="s1">", emoji: "</span><span class="s4">🦆</span><span class="s1">" }, { en: "Chicken", ja: "</span><span class="s2">にわとり</span><span class="s1">", emoji: "</span><span class="s4">🐔</span><span class="s1">" }, { en: "Frog", ja: "</span><span class="s2">かえる</span><span class="s1">", emoji: "</span><span class="s4">🐸</span><span class="s1">" }, { en: "Snake", ja: "</span><span class="s2">へび</span><span class="s1">", emoji: "</span><span class="s4">🐍</span><span class="s1">" }, { en: "Turtle", ja: "</span><span class="s2">かめ</span><span class="s1">", emoji: "</span><span class="s4">🐢</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Fish", ja: "</span><span class="s2">さかな</span><span class="s1">", emoji: "</span><span class="s4">🐟</span><span class="s1">" }, { en: "Shark", ja: "</span><span class="s2">さめ</span><span class="s1">", emoji: "</span><span class="s4">🦈</span><span class="s1">" }, { en: "Whale", ja: "</span><span class="s2">くじら</span><span class="s1">", emoji: "</span><span class="s4">🐳</span><span class="s1">" }, { en: "Dolphin", ja: "</span><span class="s2">いるか</span><span class="s1">", emoji: "</span><span class="s4">🐬</span><span class="s1">" }, { en: "Octopus", ja: "</span><span class="s2">たこ</span><span class="s1">", emoji: "</span><span class="s4">🐙</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Crab", ja: "</span><span class="s2">かに</span><span class="s1">", emoji: "</span><span class="s4">🦀</span><span class="s1">" }, { en: "Butterfly", ja: "</span><span class="s2">ちょうちょ</span><span class="s1">", emoji: "</span><span class="s4">🦋</span><span class="s1">" }, { en: "Bee", ja: "</span><span class="s2">はち</span><span class="s1">", emoji: "</span><span class="s4">🐝</span><span class="s1">" }, { en: "Ladybug", ja: "</span><span class="s2">てんとうむし</span><span class="s1">", emoji: "</span><span class="s4">🐞</span><span class="s1">" }, { en: "Ant", ja: "</span><span class="s2">あり</span><span class="s1">", emoji: "</span><span class="s4">🐜</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">たべもの</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Apple", ja: "</span><span class="s2">りんご</span><span class="s1">", emoji: "</span><span class="s4">🍎</span><span class="s1">" }, { en: "Banana", ja: "</span><span class="s2">バナナ</span><span class="s1">", emoji: "</span><span class="s4">🍌</span><span class="s1">" }, { en: "Orange", ja: "</span><span class="s2">オレンジ</span><span class="s1">", emoji: "</span><span class="s4">🍊</span><span class="s1">" }, { en: "Grape", ja: "</span><span class="s2">ぶどう</span><span class="s1">", emoji: "</span><span class="s4">🍇</span><span class="s1">" }, { en: "Strawberry", ja: "</span><span class="s2">いちご</span><span class="s1">", emoji: "</span><span class="s4">🍓</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Melon", ja: "</span><span class="s2">メロン</span><span class="s1">", emoji: "</span><span class="s4">🍈</span><span class="s1">" }, { en: "Watermelon", ja: "</span><span class="s2">すいか</span><span class="s1">", emoji: "</span><span class="s4">🍉</span><span class="s1">" }, { en: "Peach", ja: "</span><span class="s2">もも</span><span class="s1">", emoji: "</span><span class="s4">🍑</span><span class="s1">" }, { en: "Cherry", ja: "</span><span class="s2">さくらんぼ</span><span class="s1">", emoji: "</span><span class="s4">🍒</span><span class="s1">" }, { en: "Tomato", ja: "</span><span class="s2">トマト</span><span class="s1">", emoji: "</span><span class="s4">🍅</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Carrot", ja: "</span><span class="s2">にんじん</span><span class="s1">", emoji: "</span><span class="s4">🥕</span><span class="s1">" }, { en: "Potato", ja: "</span><span class="s2">じゃがいも</span><span class="s1">", emoji: "</span><span class="s4">🥔</span><span class="s1">" }, { en: "Bread", ja: "</span><span class="s2">パン</span><span class="s1">", emoji: "</span><span class="s4">🍞</span><span class="s1">" }, { en: "Rice", ja: "</span><span class="s2">ごはん</span><span class="s1">", emoji: "</span><span class="s4">🍚</span><span class="s1">" }, { en: "Hamburger", ja: "</span><span class="s2">ハンバーガー</span><span class="s1">", emoji: "</span><span class="s4">🍔</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Pizza", ja: "</span><span class="s2">ピザ</span><span class="s1">", emoji: "</span><span class="s4">🍕</span><span class="s1">" }, { en: "Cake", ja: "</span><span class="s2">ケーキ</span><span class="s1">", emoji: "</span><span class="s4">🍰</span><span class="s1">" }, { en: "Ice cream", ja: "</span><span class="s2">アイスクリーム</span><span class="s1">", emoji: "</span><span class="s4">🍦</span><span class="s1">" }, { en: "Chocolate", ja: "</span><span class="s2">チョコレート</span><span class="s1">", emoji: "</span><span class="s4">🍫</span><span class="s1">" }, { en: "Candy", ja: "</span><span class="s2">キャンディ</span><span class="s1">", emoji: "</span><span class="s4">🍬</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">のりもの</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Car", ja: "</span><span class="s2">くるま</span><span class="s1">", emoji: "</span><span class="s4">🚗</span><span class="s1">" }, { en: "Bus", ja: "</span><span class="s2">バス</span><span class="s1">", emoji: "</span><span class="s4">🚌</span><span class="s1">" }, { en: "Taxi", ja: "</span><span class="s2">タクシー</span><span class="s1">", emoji: "</span><span class="s4">🚕</span><span class="s1">" }, { en: "Police car", ja: "</span><span class="s2">パトカー</span><span class="s1">", emoji: "</span><span class="s4">🚓</span><span class="s1">" }, { en: "Ambulance", ja: "</span><span class="s2">きゅうきゅうしゃ</span><span class="s1">", emoji: "</span><span class="s4">🚑</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Fire engine", ja: "</span><span class="s2">しょうぼうしゃ</span><span class="s1">", emoji: "</span><span class="s4">🚒</span><span class="s1">" }, { en: "Truck", ja: "</span><span class="s2">トラック</span><span class="s1">", emoji: "</span><span class="s4">🚚</span><span class="s1">" }, { en: "Train", ja: "</span><span class="s2">でんしゃ</span><span class="s1">", emoji: "</span><span class="s4">🚃</span><span class="s1">" }, { en: "Airplane", ja: "</span><span class="s2">ひこうき</span><span class="s1">", emoji: "</span><span class="s4">✈️</span><span class="s1">" }, { en: "Helicopter", ja: "</span><span class="s2">ヘリコプター</span><span class="s1">", emoji: "</span><span class="s4">🚁</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Ship", ja: "</span><span class="s2">ふね</span><span class="s1">", emoji: "</span><span class="s4">🚢</span><span class="s1">" }, { en: "Boat", ja: "</span><span class="s2">ボート</span><span class="s1">", emoji: "</span><span class="s4">⛵</span><span class="s1">" }, { en: "Bicycle", ja: "</span><span class="s2">じてんしゃ</span><span class="s1">", emoji: "</span><span class="s4">🚲</span><span class="s1">" }, { en: "Motorcycle", ja: "</span><span class="s2">バイク</span><span class="s1">", emoji: "</span><span class="s4">🏍️</span><span class="s1">" }, { en: "Rocket", ja: "</span><span class="s2">ロケット</span><span class="s1">", emoji: "</span><span class="s4">🚀</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "UFO", ja: "</span><span class="s2">ユーフォー</span><span class="s1">", emoji: "</span><span class="s4">🛸</span><span class="s1">" }, { en: "Tractor", ja: "</span><span class="s2">トラクター</span><span class="s1">", emoji: "</span><span class="s4">🚜</span><span class="s1">" }, { en: "Scooter", ja: "</span><span class="s2">キックボード</span><span class="s1">", emoji: "</span><span class="s4">🛴</span><span class="s1">" }, { en: "Skateboard", ja: "</span><span class="s2">スケートボード</span><span class="s1">", emoji: "</span><span class="s4">🛹</span><span class="s1">" }, { en: "Roller coaster", ja: "</span><span class="s2">ジェットコースター</span><span class="s1">", emoji: "</span><span class="s4">🎢</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">いろ・かず</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Red", ja: "</span><span class="s2">あか</span><span class="s1">", emoji: "</span><span class="s4">🔴</span><span class="s1">" }, { en: "Blue", ja: "</span><span class="s2">あお</span><span class="s1">", emoji: "</span><span class="s4">🔵</span><span class="s1">" }, { en: "Yellow", ja: "</span><span class="s2">きいろ</span><span class="s1">", emoji: "</span><span class="s4">🟡</span><span class="s1">" }, { en: "Green", ja: "</span><span class="s2">みどり</span><span class="s1">", emoji: "</span><span class="s4">🟢</span><span class="s1">" }, { en: "Purple", ja: "</span><span class="s2">むらさき</span><span class="s1">", emoji: "</span><span class="s4">🟣</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Pink", ja: "</span><span class="s2">ピンク</span><span class="s1">", emoji: "</span><span class="s4">🌸</span><span class="s1">" }, { en: "Brown", ja: "</span><span class="s2">ちゃいろ</span><span class="s1">", emoji: "</span><span class="s4">🟤</span><span class="s1">" }, { en: "Black", ja: "</span><span class="s2">くろ</span><span class="s1">", emoji: "</span><span class="s4">⚫</span><span class="s1">" }, { en: "White", ja: "</span><span class="s2">しろ</span><span class="s1">", emoji: "</span><span class="s4">⚪</span><span class="s1">" }, { en: "Rainbow", ja: "</span><span class="s2">にじいろ</span><span class="s1">", emoji: "</span><span class="s4">🌈</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "One", ja: "</span><span class="s2">いち</span><span class="s1">", emoji: "</span><span class="s4">1️⃣</span><span class="s1">" }, { en: "Two", ja: "</span><span class="s2">に</span><span class="s1">", emoji: "</span><span class="s4">2️⃣</span><span class="s1">" }, { en: "Three", ja: "</span><span class="s2">さん</span><span class="s1">", emoji: "</span><span class="s4">3️⃣</span><span class="s1">" }, { en: "Four", ja: "</span><span class="s2">よん</span><span class="s1">", emoji: "</span><span class="s4">4️⃣</span><span class="s1">" }, { en: "Five", ja: "</span><span class="s2">ご</span><span class="s1">", emoji: "</span><span class="s4">5️⃣</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Six", ja: "</span><span class="s2">ろく</span><span class="s1">", emoji: "</span><span class="s4">6️⃣</span><span class="s1">" }, { en: "Seven", ja: "</span><span class="s2">なな</span><span class="s1">", emoji: "</span><span class="s4">7️⃣</span><span class="s1">" }, { en: "Eight", ja: "</span><span class="s2">はち</span><span class="s1">", emoji: "</span><span class="s4">8️⃣</span><span class="s1">" }, { en: "Nine", ja: "</span><span class="s2">きゅう</span><span class="s1">", emoji: "</span><span class="s4">9️⃣</span><span class="s1">" }, { en: "Ten", ja: "</span><span class="s2">じゅう</span><span class="s1">", emoji: "</span><span class="s4">🔟</span><span class="s1">" },</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">かぞく・みのまわりのもの</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Father", ja: "</span><span class="s2">おとうさん</span><span class="s1">", emoji: "</span><span class="s4">👨</span><span class="s1">" }, { en: "Mother", ja: "</span><span class="s2">おかあさん</span><span class="s1">", emoji: "</span><span class="s4">👩</span><span class="s1">" }, { en: "Brother", ja: "</span><span class="s2">おにいちゃん</span><span class="s1">", emoji: "</span><span class="s4">👦</span><span class="s1">" }, { en: "Sister", ja: "</span><span class="s2">おねえちゃん</span><span class="s1">", emoji: "</span><span class="s4">👧</span><span class="s1">" }, { en: "Baby", ja: "</span><span class="s2">あかちゃん</span><span class="s1">", emoji: "</span><span class="s4">👶</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Grandfather", ja: "</span><span class="s2">おじいちゃん</span><span class="s1">", emoji: "</span><span class="s4">👴</span><span class="s1">" }, { en: "Grandmother", ja: "</span><span class="s2">おばあちゃん</span><span class="s1">", emoji: "</span><span class="s4">👵</span><span class="s1">" }, { en: "Book", ja: "</span><span class="s2">ほん</span><span class="s1">", emoji: "</span><span class="s4">📖</span><span class="s1">" }, { en: "Desk", ja: "</span><span class="s2">つくえ</span><span class="s1">", emoji: "</span><span class="s4">🪑</span><span class="s1">" }, { en: "Pen", ja: "</span><span class="s2">ペン</span><span class="s1">", emoji: "</span><span class="s4">🖊️</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Pencil", ja: "</span><span class="s2">えんぴつ</span><span class="s1">", emoji: "</span><span class="s4">✏️</span><span class="s1">" }, { en: "Bag", ja: "</span><span class="s2">かばん</span><span class="s1">", emoji: "</span><span class="s4">🎒</span><span class="s1">" }, { en: "Hat", ja: "</span><span class="s2">ぼうし</span><span class="s1">", emoji: "</span><span class="s4">🧢</span><span class="s1">" }, { en: "Shoes", ja: "</span><span class="s2">くつ</span><span class="s1">", emoji: "</span><span class="s4">👟</span><span class="s1">" }, { en: "Socks", ja: "</span><span class="s2">くつした</span><span class="s1">", emoji: "</span><span class="s4">🧦</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Shirt", ja: "</span><span class="s2">シャツ</span><span class="s1">", emoji: "</span><span class="s4">👕</span><span class="s1">" }, { en: "Pants", ja: "</span><span class="s2">ズボン</span><span class="s1">", emoji: "</span><span class="s4">👖</span><span class="s1">" }, { en: "Bed", ja: "</span><span class="s2">ベッド</span><span class="s1">", emoji: "</span><span class="s4">🛏️</span><span class="s1">" }, { en: "Clock", ja: "</span><span class="s2">とけい</span><span class="s1">", emoji: "</span><span class="s4">🕰️</span><span class="s1">" }, { en: "Phone", ja: "</span><span class="s2">でんわ</span><span class="s1">", emoji: "</span><span class="s4">📱</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">あいさつ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Hello", ja: "</span><span class="s2">こんにちは</span><span class="s1">", emoji: "</span><span class="s4">👋</span><span class="s1">" }, { en: "Good morning", ja: "</span><span class="s2">おはよう</span><span class="s1">", emoji: "</span><span class="s4">🌅</span><span class="s1">" }, { en: "Good afternoon", ja: "</span><span class="s2">こんにちは</span><span class="s1">", emoji: "</span><span class="s4">🏙️</span><span class="s1">" }, { en: "Good evening", ja: "</span><span class="s2">こんばんは</span><span class="s1">", emoji: "</span><span class="s4">🌃</span><span class="s1">" }, { en: "Good night", ja: "</span><span class="s2">おやすみ</span><span class="s1">", emoji: "</span><span class="s4">😴</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Goodbye", ja: "</span><span class="s2">さようなら</span><span class="s1">", emoji: "</span><span class="s4">👋</span><span class="s1">" }, { en: "Thank you", ja: "</span><span class="s2">ありがとう</span><span class="s1">", emoji: "</span><span class="s4">🙏</span><span class="s1">" }, { en: "Sorry", ja: "</span><span class="s2">ごめんなさい</span><span class="s1">", emoji: "</span><span class="s4">🙇</span><span class="s1">" }, { en: "Yes", ja: "</span><span class="s2">はい</span><span class="s1">", emoji: "</span><span class="s4">⭕</span><span class="s1">" }, { en: "No", ja: "</span><span class="s2">いいえ</span><span class="s1">", emoji: "</span><span class="s4">❌</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Please", ja: "</span><span class="s2">おねがい</span><span class="s1">", emoji: "</span><span class="s4">🥺</span><span class="s1">" }, { en: "How are you", ja: "</span><span class="s2">げんき？</span><span class="s1">", emoji: "</span><span class="s4">❓</span><span class="s1">" }, { en: "I am fine", ja: "</span><span class="s2">げんきだよ</span><span class="s1">", emoji: "</span><span class="s4">🙆</span><span class="s1">" }, { en: "Nice to meet you", ja: "</span><span class="s2">はじめまして</span><span class="s1">", emoji: "</span><span class="s4">🤝</span><span class="s1">" }, { en: "See you", ja: "</span><span class="s2">またね</span><span class="s1">", emoji: "</span><span class="s4">👀</span><span class="s1">" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ en: "Happy", ja: "</span><span class="s2">うれしい</span><span class="s1">", emoji: "</span><span class="s4">😊</span><span class="s1">" }, { en: "Sad", ja: "</span><span class="s2">かなしい</span><span class="s1">", emoji: "</span><span class="s4">😢</span><span class="s1">" }, { en: "Angry", ja: "</span><span class="s2">おこる</span><span class="s1">", emoji: "</span><span class="s4">😠</span><span class="s1">" }, { en: "Hungry", ja: "</span><span class="s2">おなかすいた</span><span class="s1">", emoji: "</span><span class="s4">🤤</span><span class="s1">" }, { en: "Sleepy", ja: "</span><span class="s2">ねむい</span><span class="s1">", emoji: "</span><span class="s4">🥱</span><span class="s1">" }</span></p>
-<p class="p1"><span class="s1">];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p3"><span class="s5">// </span><span class="s1">ごはんリスト</span><span class="s5"> (</span><span class="s1">必要正解数：</span><span class="s5">2</span><span class="s1">問正解ごとに</span><span class="s5">1</span><span class="s1">つ解放</span><span class="s5">)</span></p>
-<p class="p1"><span class="s1">const foodData = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ id: "f1", name: "</span><span class="s2">ハンバーグ</span><span class="s1">", emoji: "</span><span class="s4">🍔</span><span class="s1">", unlockCost: 2 },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ id: "f2", name: "</span><span class="s2">オムライス</span><span class="s1">", emoji: "</span><span class="s4">🍳</span><span class="s1">", unlockCost: 4 },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ id: "f3", name: "</span><span class="s2">グラタン</span><span class="s1">", emoji: "</span><span class="s4">🥘</span><span class="s1">", unlockCost: 6 },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ id: "f4", name: "</span><span class="s2">ステーキ</span><span class="s1">", emoji: "</span><span class="s4">🥩</span><span class="s1">", unlockCost: 8 },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ id: "f5", name: "</span><span class="s2">ナポリタン</span><span class="s1">", emoji: "</span><span class="s4">🍝</span><span class="s1">", unlockCost: 10 }</span></p>
-<p class="p1"><span class="s1">];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">let totalCorrect = 0; // </span><span class="s2">通算正解数</span><span class="s1"> (</span><span class="s2">鍵</span><span class="s1">)</span></p>
-<p class="p1"><span class="s1">let currentExp = 0; <span class="Apple-converted-space">  </span>// </span><span class="s2">なかよし度</span></p>
-<p class="p1"><span class="s1">let isEvolved = false;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p3"><span class="s5">// </span><span class="s1">画面要素</span></p>
-<p class="p1"><span class="s1">const roomView = document.getElementById('room-view');</span></p>
-<p class="p1"><span class="s1">const quizView = document.getElementById('quiz-view');</span></p>
-<p class="p1"><span class="s1">const foodListEl = document.getElementById('food-list');</span></p>
-<p class="p1"><span class="s1">const keyCountEl = document.getElementById('key-count');</span></p>
-<p class="p1"><span class="s1">const expText = document.getElementById('exp-text');</span></p>
-<p class="p1"><span class="s1">const expBar = document.getElementById('exp-bar');</span></p>
-<p class="p1"><span class="s1">const partnerImg = document.getElementById('partner-image');</span></p>
-<p class="p1"><span class="s1">const partnerName = document.getElementById('partner-name');</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// Web Speech API</span><span class="s2">の準備</span></p>
-<p class="p1"><span class="s1">const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;</span></p>
-<p class="p1"><span class="s1">let recognition = null;</span></p>
-<p class="p1"><span class="s1">if (SpeechRecognition) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>recognition = new SpeechRecognition();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>recognition.lang = 'en-US';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>recognition.interimResults = false;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>recognition.maxAlternatives = 1;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// </span><span class="s2">初期化</span></p>
-<p class="p1"><span class="s1">function initRoom() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>keyCountEl.innerText = totalCorrect;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>foodListEl.innerHTML = "";</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>foodData.forEach(food =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const isUnlocked = totalCorrect &gt;= food.unlockCost;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const foodEl = document.createElement('div');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>foodEl.className = 'food-item' + (isUnlocked ? '' : ' locked');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>foodEl.innerText = food.emoji;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if(isUnlocked &amp;&amp; !isEvolved) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>foodEl.onclick = () =&gt; feedPartner(food);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>foodListEl.appendChild(foodEl);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function feedPartner(food) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (isEvolved) return;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">もぐもぐアニメーション</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const msg = document.getElementById('eating-msg');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.style.opacity = 1;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.style.top = "-20px";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>partnerImg.style.animation = "none";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { partnerImg.style.transform = "scale(1.2)"; }, 100);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { partnerImg.style.transform = "scale(1)"; }, 300);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">経験値アップ</span><span class="s1"> (1</span><span class="s2">回</span><span class="s1">20%</span><span class="s2">で</span><span class="s1">5</span><span class="s2">回で進化</span><span class="s1">)</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentExp += 20;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(currentExp &gt; 100) currentExp = 100;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>expText.innerText = currentExp;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>expBar.style.width = currentExp + "%";</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// </span><span class="s2">進化判定</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (currentExp &gt;= 100) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(evolve, 1000);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function evolve() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>isEvolved = true;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const overlay = document.getElementById('evolve-overlay');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>overlay.classList.add('show');</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">進化後の姿に変更</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>partnerImg.innerText = "</span><span class="s4">🔥🦊🔥</span><span class="s1">";<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>partnerName.innerText = "</span><span class="s2">ブースター</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.querySelector('h1').innerHTML = "</span><span class="s2">えいごクイズ</span><span class="s1"> - </span><span class="s2">セット</span><span class="s1">1&lt;br&gt;</span><span class="s2">（ようしょく＆ブースター）</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// --- </span><span class="s2">クイズロジック</span><span class="s1"> ---</span></p>
-<p class="p1"><span class="s1">let roundQuestions = [];</span></p>
-<p class="p1"><span class="s1">let currentQIndex = 0;</span></p>
-<p class="p1"><span class="s1">let currentCorrectAnswer = null;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">document.getElementById('start-quiz-btn').onclick = () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>roomView.classList.remove('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>quizView.classList.add('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>startRound();</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function startRound() {</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">ランダムに</span><span class="s5">5</span><span class="s1">問選ぶ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const shuffled = [...wordData].sort(() =&gt; 0.5 - Math.random());</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>roundQuestions = shuffled.slice(0, 5);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentQIndex = 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>showNextQuestion();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function showNextQuestion() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (currentQIndex &gt;= roundQuestions.length) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// </span><span class="s2">ラウンド終了</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>quizView.classList.remove('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>roomView.classList.add('active');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>initRoom();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.getElementById('quiz-progress-text').innerText = `</span><span class="s2">だい</span><span class="s1"> ${currentQIndex + 1} </span><span class="s2">もん！</span><span class="s1"> (${currentQIndex + 1}/5)`;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const qData = roundQuestions[currentQIndex];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>currentCorrectAnswer = qData;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const contentEl = document.getElementById('quiz-content');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>contentEl.innerHTML = "";</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">クイズ形式をランダムに決定</span><span class="s5"> (1: </span><span class="s1">絵</span><span class="s5">+</span><span class="s1">音声選択</span><span class="s5">, 2: </span><span class="s1">発音</span><span class="s5">, 3: </span><span class="s1">スペル選択</span><span class="s5">)</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// ※ </span><span class="s1">音声認識が未対応のブラウザでは</span><span class="s5"> 1 </span><span class="s1">か</span><span class="s5"> 3 </span><span class="s1">にする</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let qType = Math.floor(Math.random() * 3) + 1;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (!recognition &amp;&amp; qType === 2) qType = 1;</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (qType === 1) {</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span>// </span><span class="s1">形式</span><span class="s5">1</span><span class="s1">：音声を聞いて正しい絵を選ぶ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;</span><span class="s2">おとをきいて、えらぼう！</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button id="play-voice-btn"&gt;</span><span class="s4">🔊</span><span class="s1">&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="options-grid" id="options-container"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('play-voice-btn').onclick = () =&gt; playVoice(qData.en);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>createOptions(qData, contentEl.querySelector('#options-container'), true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setTimeout(() =&gt; playVoice(qData.en), 500);</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else if (qType === 2) {</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span>// </span><span class="s1">形式</span><span class="s5">2</span><span class="s1">：マイクで発音する</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;</span><span class="s2">マイクをおして、えいごでいってみよう！</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="question-emoji"&gt;${qData.emoji}&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="question-word"&gt;${qData.en}&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.2rem; color:#666;"&gt;</span><span class="s2">（</span><span class="s1">${qData.ja}</span><span class="s2">）</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button class="mic-btn" id="mic-btn"&gt;</span><span class="s4">🎤</span><span class="s1">&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;"&gt;</span><span class="s4">🔊</span><span class="s1"> </span><span class="s2">きく</span><span class="s1">&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.getElementById('play-voice-btn').onclick = () =&gt; playVoice(qData.en);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const micBtn = document.getElementById('mic-btn');</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>micBtn.onclick = () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>micBtn.classList.add('listening');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>recognition.start();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>recognition.onresult = (event) =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>micBtn.classList.remove('listening');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">      </span></span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">      </span>// 5</span><span class="s1">歳児向けに甘い判定（部分一致で</span><span class="s5">OK</span><span class="s1">）</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>if (spoken.includes(target) || target.includes(spoken) || spoken.length &gt; 0) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>checkAnswer(true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>checkAnswer(false);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>recognition.onerror = () =&gt; { micBtn.classList.remove('listening'); checkAnswer(false); };</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else {</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">    </span>// </span><span class="s1">形式</span><span class="s5">3</span><span class="s1">：英語を見て正しい絵を選ぶ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>contentEl.innerHTML = `</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;p style="font-size:1.5rem; font-weight:bold;"&gt;</span><span class="s2">えいごをよんで、えらぼう！</span><span class="s1">&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="question-word" style="font-size:3.5rem; color:#E91E63;"&gt;${qData.en}&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="options-grid" id="options-container"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>createOptions(qData, contentEl.querySelector('#options-container'), true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function createOptions(correctData, container, useEmoji) {</span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">ダミーの選択肢を</span><span class="s5">2</span><span class="s1">つ選ぶ</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const dummies = [...wordData].filter(w =&gt; w.en !== correctData.en).sort(() =&gt; 0.5 - Math.random()).slice(0, 2);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const options = [correctData, ...dummies].sort(() =&gt; 0.5 - Math.random());</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>options.forEach(opt =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const btn = document.createElement('div');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.className = 'option-btn';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.innerHTML = `&lt;span style="font-size:3rem;"&gt;${opt.emoji}&lt;/span&gt; &lt;span style="font-size:1.5rem;"&gt;${opt.ja}&lt;/span&gt;`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>btn.onclick = () =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>checkAnswer(opt.en === correctData.en);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>container.appendChild(btn);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>});</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function playVoice(text) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const msg = new SpeechSynthesisUtterance(text);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.lang = 'en-US';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.rate = 0.8; // </span><span class="s2">ゆっくり</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>window.speechSynthesis.speak(msg);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function checkAnswer(isCorrect) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const overlay = document.getElementById('feedback-overlay');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const icon = document.getElementById('feedback-icon');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const text = document.getElementById('feedback-text');</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if (isCorrect) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>icon.innerText = "</span><span class="s4">⭕</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.innerText = "</span><span class="s2">せいかい！すごい！</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.style.color = "var(--correct)";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>totalCorrect++;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>} else {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>icon.innerText = "</span><span class="s4">❌</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.innerText = "</span><span class="s2">おしい！もういちど！</span><span class="s1">";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>text.style.color = "var(--incorrect)";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>overlay.classList.add('show');</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p3"><span class="s5"><span class="Apple-converted-space">  </span>// </span><span class="s1">効果音代わりに音声を再生</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const msg = new SpeechSynthesisUtterance(isCorrect ? "Good job!" : "Oh no");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>msg.lang = 'en-US';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>window.speechSynthesis.speak(msg);</span></p>
-<p class="p2"><span class="s1"><span class="Apple-converted-space">  </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setTimeout(() =&gt; {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>overlay.classList.remove('show');</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if (isCorrect) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>currentQIndex++;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>showNextQuestion();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}, 2000);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p3"><span class="s5">// </span><span class="s1">起動時の初期化</span></p>
-<p class="p1"><span class="s1">initRoom();</span></p>
-<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+
+<div id="app">
+  <!-- 育成ルーム画面 -->
+  <div id="room-view" class="view active">
+    <h1>えいごクイズ - セット1<br>（ようしょく＆イーブイ）</h1>
+    
+    <div id="partner-container">
+      <div id="partner-image">🦊</div> 
+      <div id="partner-name">イーブイ</div>
+      <div id="eating-msg" class="eating-msg">もぐもぐ♪</div>
+    </div>
+    
+    <div class="exp-container">
+      <div class="exp-label">なかよしど: <span id="exp-text">0</span>%</div>
+      <div class="exp-bar-bg">
+         <div id="exp-bar" class="exp-bar-fill"></div>
+      </div>
+    </div>
+    
+    <div class="food-section">
+      <p style="font-size: 1.2rem; font-weight: bold;">ごはん（かぎ🔑: <span id="key-count">0</span>）</p>
+      <p style="font-size: 0.9rem; color: #777;">２もんせいかいで、ごはんが１つひらくよ！</p>
+      <div id="food-list" class="food-list">
+        <!-- ごはんアイテムがここに生成されます -->
+      </div>
+    </div>
+    
+    <button id="start-quiz-btn" class="big-btn">クイズをする (5もん)</button>
+  </div>
+
+  <!-- クイズ画面 -->
+  <div id="quiz-view" class="view">
+    <div class="quiz-header">
+      <div id="quiz-progress-text">だい 1 もん！ (1/5)</div>
+    </div>
+    
+    <div id="quiz-content">
+       <!-- JSでクイズのHTMLを書き換えます -->
+    </div>
+  </div>
+</div>
+
+<!-- フィードバック画面 -->
+<div id="feedback-overlay">
+  <div id="feedback-icon" class="feedback-icon">⭕</div>
+  <div id="feedback-text" class="feedback-text">せいかい！</div>
+</div>
+
+<!-- 進化画面 -->
+<div id="evolve-overlay">
+  <div class="evolve-sparkle">✨</div>
+  <div style="font-size: 7rem; margin: 20px;" id="evolve-image">🔥🦊🔥</div>
+  <h2 style="font-size: 2.5rem; color: #D84315;">おめでとう！<br>ブースターにしんかした！</h2>
+  <button class="big-btn" onclick="document.getElementById('evolve-overlay').classList.remove('show')">もどる</button>
+</div>
+
+<script>
+// 問題データ (150問)
+const wordData = [
+  // どうぶつ
+  { en: "Dog", ja: "いぬ", emoji: "🐶" }, { en: "Cat", ja: "ねこ", emoji: "🐱" }, { en: "Rabbit", ja: "うさぎ", emoji: "🐰" }, { en: "Elephant", ja: "ぞう", emoji: "🐘" }, { en: "Lion", ja: "ライオン", emoji: "🦁" },
+  { en: "Tiger", ja: "とら", emoji: "🐯" }, { en: "Bear", ja: "くま", emoji: "🐻" }, { en: "Monkey", ja: "さる", emoji: "🐵" }, { en: "Mouse", ja: "ねずみ", emoji: "🐭" }, { en: "Cow", ja: "うし", emoji: "🐮" },
+  { en: "Pig", ja: "ぶた", emoji: "🐷" }, { en: "Horse", ja: "うま", emoji: "🐴" }, { en: "Sheep", ja: "ひつじ", emoji: "🐑" }, { en: "Bird", ja: "とり", emoji: "🐦" }, { en: "Penguin", ja: "ペンギン", emoji: "🐧" },
+  { en: "Duck", ja: "あひる", emoji: "🦆" }, { en: "Chicken", ja: "にわとり", emoji: "🐔" }, { en: "Frog", ja: "かえる", emoji: "🐸" }, { en: "Snake", ja: "へび", emoji: "🐍" }, { en: "Turtle", ja: "かめ", emoji: "🐢" },
+  { en: "Fish", ja: "さかな", emoji: "🐟" }, { en: "Shark", ja: "さめ", emoji: "🦈" }, { en: "Whale", ja: "くじら", emoji: "🐳" }, { en: "Dolphin", ja: "いるか", emoji: "🐬" }, { en: "Octopus", ja: "たこ", emoji: "🐙" },
+  { en: "Crab", ja: "かに", emoji: "🦀" }, { en: "Butterfly", ja: "ちょうちょ", emoji: "🦋" }, { en: "Bee", ja: "はち", emoji: "🐝" }, { en: "Ladybug", ja: "てんとうむし", emoji: "🐞" }, { en: "Ant", ja: "あり", emoji: "🐜" },
+  // たべもの
+  { en: "Apple", ja: "りんご", emoji: "🍎" }, { en: "Banana", ja: "バナナ", emoji: "🍌" }, { en: "Orange", ja: "オレンジ", emoji: "🍊" }, { en: "Grape", ja: "ぶどう", emoji: "🍇" }, { en: "Strawberry", ja: "いちご", emoji: "🍓" },
+  { en: "Melon", ja: "メロン", emoji: "🍈" }, { en: "Watermelon", ja: "すいか", emoji: "🍉" }, { en: "Peach", ja: "もも", emoji: "🍑" }, { en: "Cherry", ja: "さくらんぼ", emoji: "🍒" }, { en: "Tomato", ja: "トマト", emoji: "🍅" },
+  { en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Bread", ja: "パン", emoji: "🍞" }, { en: "Rice", ja: "ごはん", emoji: "🍚" }, { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" },
+  { en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" }, { en: "Ice cream", ja: "アイスクリーム", emoji: "🍦" }, { en: "Chocolate", ja: "チョコレート", emoji: "🍫" }, { en: "Candy", ja: "キャンディ", emoji: "🍬" },
+  // のりもの
+  { en: "Car", ja: "くるま", emoji: "🚗" }, { en: "Bus", ja: "バス", emoji: "🚌" }, { en: "Taxi", ja: "タクシー", emoji: "🚕" }, { en: "Police car", ja: "パトカー", emoji: "🚓" }, { en: "Ambulance", ja: "きゅうきゅうしゃ", emoji: "🚑" },
+  { en: "Fire engine", ja: "しょうぼうしゃ", emoji: "🚒" }, { en: "Truck", ja: "トラック", emoji: "🚚" }, { en: "Train", ja: "でんしゃ", emoji: "🚃" }, { en: "Airplane", ja: "ひこうき", emoji: "✈️" }, { en: "Helicopter", ja: "ヘリコプター", emoji: "🚁" },
+  { en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Motorcycle", ja: "バイク", emoji: "🏍️" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" },
+  { en: "UFO", ja: "ユーフォー", emoji: "🛸" }, { en: "Tractor", ja: "トラクター", emoji: "🚜" }, { en: "Scooter", ja: "キックボード", emoji: "🛴" }, { en: "Skateboard", ja: "スケートボード", emoji: "🛹" }, { en: "Roller coaster", ja: "ジェットコースター", emoji: "🎢" },
+  // いろ・かず
+  { en: "Red", ja: "あか", emoji: "🔴" }, { en: "Blue", ja: "あお", emoji: "🔵" }, { en: "Yellow", ja: "きいろ", emoji: "🟡" }, { en: "Green", ja: "みどり", emoji: "🟢" }, { en: "Purple", ja: "むらさき", emoji: "🟣" },
+  { en: "Pink", ja: "ピンク", emoji: "🌸" }, { en: "Brown", ja: "ちゃいろ", emoji: "🟤" }, { en: "Black", ja: "くろ", emoji: "⚫" }, { en: "White", ja: "しろ", emoji: "⚪" }, { en: "Rainbow", ja: "にじいろ", emoji: "🌈" },
+  { en: "One", ja: "いち", emoji: "1️⃣" }, { en: "Two", ja: "に", emoji: "2️⃣" }, { en: "Three", ja: "さん", emoji: "3️⃣" }, { en: "Four", ja: "よん", emoji: "4️⃣" }, { en: "Five", ja: "ご", emoji: "5️⃣" },
+  { en: "Six", ja: "ろく", emoji: "6️⃣" }, { en: "Seven", ja: "なな", emoji: "7️⃣" }, { en: "Eight", ja: "はち", emoji: "8️⃣" }, { en: "Nine", ja: "きゅう", emoji: "9️⃣" }, { en: "Ten", ja: "じゅう", emoji: "🔟" },
+  // かぞく・みのまわりのもの
+  { en: "Father", ja: "おとうさん", emoji: "👨" }, { en: "Mother", ja: "おかあさん", emoji: "👩" }, { en: "Brother", ja: "おにいちゃん", emoji: "👦" }, { en: "Sister", ja: "おねえちゃん", emoji: "👧" }, { en: "Baby", ja: "あかちゃん", emoji: "👶" },
+  { en: "Grandfather", ja: "おじいちゃん", emoji: "👴" }, { en: "Grandmother", ja: "おばあちゃん", emoji: "👵" }, { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Pen", ja: "ペン", emoji: "🖊️" },
+  { en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Bag", ja: "かばん", emoji: "🎒" }, { en: "Hat", ja: "ぼうし", emoji: "🧢" }, { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Socks", ja: "くつした", emoji: "🧦" },
+  { en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Bed", ja: "ベッド", emoji: "🛏️" }, { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Phone", ja: "でんわ", emoji: "📱" },
+  // あいさつ
+  { en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good afternoon", ja: "こんにちは", emoji: "🏙️" }, { en: "Good evening", ja: "こんばんは", emoji: "🌃" }, { en: "Good night", ja: "おやすみ", emoji: "😴" },
+  { en: "Goodbye", ja: "さようなら", emoji: "👋" }, { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" }, { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" },
+  { en: "Please", ja: "おねがい", emoji: "🥺" }, { en: "How are you", ja: "げんき？", emoji: "❓" }, { en: "I am fine", ja: "げんきだよ", emoji: "🙆" }, { en: "Nice to meet you", ja: "はじめまして", emoji: "🤝" }, { en: "See you", ja: "またね", emoji: "👀" },
+  { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" }
+];
+
+// ごはんリスト (必要正解数：2問正解ごとに1つ解放)
+const foodData = [
+  { id: "f1", name: "ハンバーグ", emoji: "🍔", unlockCost: 2 },
+  { id: "f2", name: "オムライス", emoji: "🍳", unlockCost: 4 },
+  { id: "f3", name: "グラタン", emoji: "🥘", unlockCost: 6 },
+  { id: "f4", name: "ステーキ", emoji: "🥩", unlockCost: 8 },
+  { id: "f5", name: "ナポリタン", emoji: "🍝", unlockCost: 10 }
+];
+
+let totalCorrect = 0; // 通算正解数 (鍵)
+let currentExp = 0;   // なかよし度
+let isEvolved = false;
+
+// 画面要素
+const roomView = document.getElementById('room-view');
+const quizView = document.getElementById('quiz-view');
+const foodListEl = document.getElementById('food-list');
+const keyCountEl = document.getElementById('key-count');
+const expText = document.getElementById('exp-text');
+const expBar = document.getElementById('exp-bar');
+const partnerImg = document.getElementById('partner-image');
+const partnerName = document.getElementById('partner-name');
+
+// Web Speech APIの準備
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+}
+
+// 初期化
+function initRoom() {
+  keyCountEl.innerText = totalCorrect;
+  foodListEl.innerHTML = "";
+  
+  foodData.forEach(food => {
+    const isUnlocked = totalCorrect >= food.unlockCost;
+    const foodEl = document.createElement('div');
+    foodEl.className = 'food-item' + (isUnlocked ? '' : ' locked');
+    foodEl.innerText = food.emoji;
+    
+    if(isUnlocked && !isEvolved) {
+      foodEl.onclick = () => feedPartner(food);
+    }
+    foodListEl.appendChild(foodEl);
+  });
+}
+
+function feedPartner(food) {
+  if (isEvolved) return;
+  
+  // もぐもぐアニメーション
+  const msg = document.getElementById('eating-msg');
+  msg.style.opacity = 1;
+  msg.style.top = "-20px";
+  partnerImg.style.animation = "none";
+  setTimeout(() => { partnerImg.style.transform = "scale(1.2)"; }, 100);
+  setTimeout(() => { partnerImg.style.transform = "scale(1)"; }, 300);
+  setTimeout(() => { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);
+  
+  // 経験値アップ (1回20%で5回で進化)
+  currentExp += 20;
+  if(currentExp > 100) currentExp = 100;
+  expText.innerText = currentExp;
+  expBar.style.width = currentExp + "%";
+  
+  // 進化判定
+  if (currentExp >= 100) {
+    setTimeout(evolve, 1000);
+  }
+}
+
+function evolve() {
+  isEvolved = true;
+  const overlay = document.getElementById('evolve-overlay');
+  overlay.classList.add('show');
+  
+  // 進化後の姿に変更
+  partnerImg.innerText = "🔥🦊🔥"; 
+  partnerName.innerText = "ブースター";
+  document.querySelector('h1').innerHTML = "えいごクイズ - セット1<br>（ようしょく＆ブースター）";
+}
+
+// --- クイズロジック ---
+let roundQuestions = [];
+let currentQIndex = 0;
+let currentCorrectAnswer = null;
+
+document.getElementById('start-quiz-btn').onclick = () => {
+  roomView.classList.remove('active');
+  quizView.classList.add('active');
+  startRound();
+};
+
+function startRound() {
+  // ランダムに5問選ぶ
+  const shuffled = [...wordData].sort(() => 0.5 - Math.random());
+  roundQuestions = shuffled.slice(0, 5);
+  currentQIndex = 0;
+  showNextQuestion();
+}
+
+function showNextQuestion() {
+  if (currentQIndex >= roundQuestions.length) {
+    // ラウンド終了
+    quizView.classList.remove('active');
+    roomView.classList.add('active');
+    initRoom();
+    return;
+  }
+  
+  document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/5)`;
+  
+  const qData = roundQuestions[currentQIndex];
+  currentCorrectAnswer = qData;
+  const contentEl = document.getElementById('quiz-content');
+  contentEl.innerHTML = "";
+  
+  // クイズ形式をランダムに決定 (1: 絵+音声選択, 2: 発音, 3: スペル選択)
+  // ※ 音声認識が未対応のブラウザでは 1 か 3 にする
+  let qType = Math.floor(Math.random() * 3) + 1;
+  if (!recognition && qType === 2) qType = 1;
+  
+  if (qType === 1) {
+    // 形式1：音声を聞いて正しい絵を選ぶ
+    contentEl.innerHTML = `
+      <p style="font-size:1.5rem; font-weight:bold;">おとをきいて、えらぼう！</p>
+      <button id="play-voice-btn">🔊</button>
+      <div class="options-grid" id="options-container"></div>
+    `;
+    document.getElementById('play-voice-btn').onclick = () => playVoice(qData.en);
+    createOptions(qData, contentEl.querySelector('#options-container'), true);
+    setTimeout(() => playVoice(qData.en), 500);
+    
+  } else if (qType === 2) {
+    // 形式2：マイクで発音する
+    contentEl.innerHTML = `
+      <p style="font-size:1.5rem; font-weight:bold;">マイクをおして、えいごでいってみよう！</p>
+      <div class="question-emoji">${qData.emoji}</div>
+      <div class="question-word">${qData.en}</div>
+      <p style="font-size:1.2rem; color:#666;">（${qData.ja}）</p>
+      <button class="mic-btn" id="mic-btn">🎤</button>
+      <button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;">🔊 きく</button>
+    `;
+    document.getElementById('play-voice-btn').onclick = () => playVoice(qData.en);
+    const micBtn = document.getElementById('mic-btn');
+    
+    micBtn.onclick = () => {
+      micBtn.classList.add('listening');
+      recognition.start();
+    };
+    
+    recognition.onresult = (event) => {
+      micBtn.classList.remove('listening');
+      const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
+      
+      // 5歳児向けに甘い判定（部分一致でOK）
+      if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
+        checkAnswer(true);
+      } else {
+        checkAnswer(false);
+      }
+    };
+    recognition.onerror = () => { micBtn.classList.remove('listening'); checkAnswer(false); };
+    
+  } else {
+    // 形式3：英語を見て正しい絵を選ぶ
+    contentEl.innerHTML = `
+      <p style="font-size:1.5rem; font-weight:bold;">えいごをよんで、えらぼう！</p>
+      <div class="question-word" style="font-size:3.5rem; color:#E91E63;">${qData.en}</div>
+      <div class="options-grid" id="options-container"></div>
+    `;
+    createOptions(qData, contentEl.querySelector('#options-container'), true);
+  }
+}
+
+function createOptions(correctData, container, useEmoji) {
+  // ダミーの選択肢を2つ選ぶ
+  const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
+  const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
+  
+  options.forEach(opt => {
+    const btn = document.createElement('div');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span style="font-size:3rem;">${opt.emoji}</span> <span style="font-size:1.5rem;">${opt.ja}</span>`;
+    btn.onclick = () => {
+      checkAnswer(opt.en === correctData.en);
+    };
+    container.appendChild(btn);
+  });
+}
+
+function playVoice(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'en-US';
+  msg.rate = 0.8; // ゆっくり
+  window.speechSynthesis.speak(msg);
+}
+
+function checkAnswer(isCorrect) {
+  const overlay = document.getElementById('feedback-overlay');
+  const icon = document.getElementById('feedback-icon');
+  const text = document.getElementById('feedback-text');
+  
+  if (isCorrect) {
+    icon.innerText = "⭕";
+    text.innerText = "せいかい！すごい！";
+    text.style.color = "var(--correct)";
+    totalCorrect++;
+  } else {
+    icon.innerText = "❌";
+    text.innerText = "おしい！もういちど！";
+    text.style.color = "var(--incorrect)";
+  }
+  
+  overlay.classList.add('show');
+  
+  // 効果音代わりに音声を再生
+  const msg = new SpeechSynthesisUtterance(isCorrect ? "Good job!" : "Oh no");
+  msg.lang = 'en-US';
+  window.speechSynthesis.speak(msg);
+  
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    if (isCorrect) {
+      currentQIndex++;
+      showNextQuestion();
+    }
+  }, 2000);
+}
+
+// 起動時の初期化
+initRoom();
+</script>
+
 </body>
 </html>
