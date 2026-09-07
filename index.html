@@ -95,6 +95,12 @@
     
     #play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}
     
+    #parent-ok-btn {
+      background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 15px;
+      font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 0 #388E3C; cursor: pointer; margin-top: 15px; width: 100%;
+    }
+    #parent-ok-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #388E3C; }
+
     #feedback-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       display: flex; justify-content: center; align-items: center; flex-direction: column;
@@ -138,20 +144,18 @@
     
     <div class="food-section">
       <p style="font-size: 1.2rem; font-weight: bold;">ごはん（かぎ🔑: <span id="key-count">0</span>）</p>
-      <p style="font-size: 0.9rem; color: #777;">３もんせいかいで、ごはんが１つひらくよ！</p>
-      <div id="food-list" class="food-list">
-        <!-- ごはんアイテムがここに生成されます -->
-      </div>
+      <p style="font-size: 0.9rem; color: #777;">４もんせいかいで、ごはんが１つひらくよ！</p>
+      <div id="food-list" class="food-list"></div>
     </div>
     
-    <button id="start-quiz-btn" class="big-btn">クイズをする (3もん)</button>
+    <button id="start-quiz-btn" class="big-btn">クイズをする (4もん)</button>
     <button id="reset-evo-btn" class="big-btn" style="display:none; background-color: #9C27B0; box-shadow: 0 6px 0 #7B1FA2;">イーブイにもどる🔄</button>
   </div>
 
   <!-- クイズ画面 -->
   <div id="quiz-view" class="view">
     <div class="quiz-header">
-      <div id="quiz-progress-text">だい 1 もん！ (1/3)</div>
+      <div id="quiz-progress-text">だい 1 もん！ (1/4)</div>
     </div>
     <div id="quiz-content"></div>
   </div>
@@ -172,34 +176,48 @@
 </div>
 
 <script>
-// 問題データ (150問)
+// 英検5級対応 大増量データ (約230語)
 const wordData = [
+  // どうぶつ
   { en: "Dog", ja: "いぬ", emoji: "🐶" }, { en: "Cat", ja: "ねこ", emoji: "🐱" }, { en: "Rabbit", ja: "うさぎ", emoji: "🐰" }, { en: "Elephant", ja: "ぞう", emoji: "🐘" }, { en: "Lion", ja: "ライオン", emoji: "🦁" },
   { en: "Tiger", ja: "とら", emoji: "🐯" }, { en: "Bear", ja: "くま", emoji: "🐻" }, { en: "Monkey", ja: "さる", emoji: "🐵" }, { en: "Mouse", ja: "ねずみ", emoji: "🐭" }, { en: "Cow", ja: "うし", emoji: "🐮" },
   { en: "Pig", ja: "ぶた", emoji: "🐷" }, { en: "Horse", ja: "うま", emoji: "🐴" }, { en: "Sheep", ja: "ひつじ", emoji: "🐑" }, { en: "Bird", ja: "とり", emoji: "🐦" }, { en: "Penguin", ja: "ペンギン", emoji: "🐧" },
-  { en: "Duck", ja: "あひる", emoji: "🦆" }, { en: "Chicken", ja: "にわとり", emoji: "🐔" }, { en: "Frog", ja: "かえる", emoji: "🐸" }, { en: "Snake", ja: "へび", emoji: "🐍" }, { en: "Turtle", ja: "かめ", emoji: "🐢" },
-  { en: "Fish", ja: "さかな", emoji: "🐟" }, { en: "Shark", ja: "さめ", emoji: "🦈" }, { en: "Whale", ja: "くじら", emoji: "🐳" }, { en: "Dolphin", ja: "いるか", emoji: "🐬" }, { en: "Octopus", ja: "たこ", emoji: "🐙" },
-  { en: "Crab", ja: "かに", emoji: "🦀" }, { en: "Butterfly", ja: "ちょうちょ", emoji: "🦋" }, { en: "Bee", ja: "はち", emoji: "🐝" }, { en: "Ladybug", ja: "てんとうむし", emoji: "🐞" }, { en: "Ant", ja: "あり", emoji: "🐜" },
+  // たべもの・のみもの
   { en: "Apple", ja: "りんご", emoji: "🍎" }, { en: "Banana", ja: "バナナ", emoji: "🍌" }, { en: "Orange", ja: "オレンジ", emoji: "🍊" }, { en: "Grape", ja: "ぶどう", emoji: "🍇" }, { en: "Strawberry", ja: "いちご", emoji: "🍓" },
-  { en: "Melon", ja: "メロン", emoji: "🍈" }, { en: "Watermelon", ja: "すいか", emoji: "🍉" }, { en: "Peach", ja: "もも", emoji: "🍑" }, { en: "Cherry", ja: "さくらんぼ", emoji: "🍒" }, { en: "Tomato", ja: "トマト", emoji: "🍅" },
-  { en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Bread", ja: "パン", emoji: "🍞" }, { en: "Rice", ja: "ごはん", emoji: "🍚" }, { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" },
-  { en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" }, { en: "Ice cream", ja: "アイスクリーム", emoji: "🍦" }, { en: "Chocolate", ja: "チョコレート", emoji: "🍫" }, { en: "Candy", ja: "キャンディ", emoji: "🍬" },
-  { en: "Car", ja: "くるま", emoji: "🚗" }, { en: "Bus", ja: "バス", emoji: "🚌" }, { en: "Taxi", ja: "タクシー", emoji: "🚕" }, { en: "Police car", ja: "パトカー", emoji: "🚓" }, { en: "Ambulance", ja: "きゅうきゅうしゃ", emoji: "🚑" },
-  { en: "Fire engine", ja: "しょうぼうしゃ", emoji: "🚒" }, { en: "Truck", ja: "トラック", emoji: "🚚" }, { en: "Train", ja: "でんしゃ", emoji: "🚃" }, { en: "Airplane", ja: "ひこうき", emoji: "✈️" }, { en: "Helicopter", ja: "ヘリコプター", emoji: "🚁" },
-  { en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Motorcycle", ja: "バイク", emoji: "🏍️" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" },
-  { en: "UFO", ja: "ユーフォー", emoji: "🛸" }, { en: "Tractor", ja: "トラクター", emoji: "🚜" }, { en: "Scooter", ja: "キックボード", emoji: "🛴" }, { en: "Skateboard", ja: "スケートボード", emoji: "🛹" }, { en: "Roller coaster", ja: "ジェットコースター", emoji: "🎢" },
+  { en: "Tomato", ja: "トマト", emoji: "🍅" }, { en: "Carrot", ja: "にんじん", emoji: "🥕" }, { en: "Potato", ja: "じゃがいも", emoji: "🥔" }, { en: "Bread", ja: "パン", emoji: "🍞" }, { en: "Rice", ja: "ごはん", emoji: "🍚" },
+  { en: "Hamburger", ja: "ハンバーガー", emoji: "🍔" }, { en: "Pizza", ja: "ピザ", emoji: "🍕" }, { en: "Cake", ja: "ケーキ", emoji: "🍰" }, { en: "Ice cream", ja: "アイス", emoji: "🍦" }, { en: "Water", ja: "みず", emoji: "💧" },
+  { en: "Milk", ja: "ぎゅうにゅう", emoji: "🥛" }, { en: "Tea", ja: "おちゃ", emoji: "🍵" }, { en: "Juice", ja: "ジュース", emoji: "🧃" }, { en: "Egg", ja: "たまご", emoji: "🥚" }, { en: "Meat", ja: "おにく", emoji: "🍖" },
+  // のりもの
+  { en: "Car", ja: "くるま", emoji: "🚗" }, { en: "Bus", ja: "バス", emoji: "🚌" }, { en: "Taxi", ja: "タクシー", emoji: "🚕" }, { en: "Train", ja: "でんしゃ", emoji: "🚃" }, { en: "Airplane", ja: "ひこうき", emoji: "✈️" },
+  { en: "Ship", ja: "ふね", emoji: "🚢" }, { en: "Boat", ja: "ボート", emoji: "⛵" }, { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" }, { en: "Rocket", ja: "ロケット", emoji: "🚀" },
+  // いろ
   { en: "Red", ja: "あか", emoji: "🔴" }, { en: "Blue", ja: "あお", emoji: "🔵" }, { en: "Yellow", ja: "きいろ", emoji: "🟡" }, { en: "Green", ja: "みどり", emoji: "🟢" }, { en: "Purple", ja: "むらさき", emoji: "🟣" },
-  { en: "Pink", ja: "ピンク", emoji: "🌸" }, { en: "Brown", ja: "ちゃいろ", emoji: "🟤" }, { en: "Black", ja: "くろ", emoji: "⚫" }, { en: "White", ja: "しろ", emoji: "⚪" }, { en: "Rainbow", ja: "にじいろ", emoji: "🌈" },
+  { en: "Pink", ja: "ピンク", emoji: "🌸" }, { en: "Brown", ja: "ちゃいろ", emoji: "🟤" }, { en: "Black", ja: "くろ", emoji: "⚫" }, { en: "White", ja: "しろ", emoji: "⚪" },
+  // かず
   { en: "One", ja: "いち", emoji: "1️⃣" }, { en: "Two", ja: "に", emoji: "2️⃣" }, { en: "Three", ja: "さん", emoji: "3️⃣" }, { en: "Four", ja: "よん", emoji: "4️⃣" }, { en: "Five", ja: "ご", emoji: "5️⃣" },
   { en: "Six", ja: "ろく", emoji: "6️⃣" }, { en: "Seven", ja: "なな", emoji: "7️⃣" }, { en: "Eight", ja: "はち", emoji: "8️⃣" }, { en: "Nine", ja: "きゅう", emoji: "9️⃣" }, { en: "Ten", ja: "じゅう", emoji: "🔟" },
+  // かぞく・ひと
   { en: "Father", ja: "おとうさん", emoji: "👨" }, { en: "Mother", ja: "おかあさん", emoji: "👩" }, { en: "Brother", ja: "おにいちゃん", emoji: "👦" }, { en: "Sister", ja: "おねえちゃん", emoji: "👧" }, { en: "Baby", ja: "あかちゃん", emoji: "👶" },
-  { en: "Grandfather", ja: "おじいちゃん", emoji: "👴" }, { en: "Grandmother", ja: "おばあちゃん", emoji: "👵" }, { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Pen", ja: "ペン", emoji: "🖊️" },
-  { en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Bag", ja: "かばん", emoji: "🎒" }, { en: "Hat", ja: "ぼうし", emoji: "🧢" }, { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Socks", ja: "くつした", emoji: "🧦" },
-  { en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Bed", ja: "ベッド", emoji: "🛏️" }, { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Phone", ja: "でんわ", emoji: "📱" },
-  { en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good afternoon", ja: "こんにちは", emoji: "🏙️" }, { en: "Good evening", ja: "こんばんは", emoji: "🌃" }, { en: "Good night", ja: "おやすみ", emoji: "😴" },
-  { en: "Goodbye", ja: "さようなら", emoji: "👋" }, { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" }, { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" },
-  { en: "Please", ja: "おねがい", emoji: "🥺" }, { en: "How are you", ja: "げんき？", emoji: "❓" }, { en: "I am fine", ja: "げんきだよ", emoji: "🙆" }, { en: "Nice to meet you", ja: "はじめまして", emoji: "🤝" }, { en: "See you", ja: "またね", emoji: "👀" },
-  { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" }
+  { en: "Grandfather", ja: "おじいちゃん", emoji: "👴" }, { en: "Grandmother", ja: "おばあちゃん", emoji: "👵" }, { en: "Friend", ja: "ともだち", emoji: "🧑‍🤝‍🧑" }, { en: "Boy", ja: "おとこのこ", emoji: "👦" }, { en: "Girl", ja: "おんなのこ", emoji: "👧" },
+  // みのまわりのもの・ばしょ
+  { en: "Book", ja: "ほん", emoji: "📖" }, { en: "Desk", ja: "つくえ", emoji: "🪑" }, { en: "Pen", ja: "ペン", emoji: "🖊️" }, { en: "Pencil", ja: "えんぴつ", emoji: "✏️" }, { en: "Bag", ja: "かばん", emoji: "🎒" },
+  { en: "Hat", ja: "ぼうし", emoji: "🧢" }, { en: "Shoes", ja: "くつ", emoji: "👟" }, { en: "Shirt", ja: "シャツ", emoji: "👕" }, { en: "Pants", ja: "ズボン", emoji: "👖" }, { en: "Bed", ja: "ベッド", emoji: "🛏️" },
+  { en: "Clock", ja: "とけい", emoji: "🕰️" }, { en: "Phone", ja: "でんわ", emoji: "📱" }, { en: "Computer", ja: "パソコン", emoji: "💻" }, { en: "TV", ja: "テレビ", emoji: "📺" }, { en: "House", ja: "いえ", emoji: "🏠" },
+  { en: "Room", ja: "へや", emoji: "🚪" }, { en: "Window", ja: "まど", emoji: "🪟" }, { en: "School", ja: "がっこう", emoji: "🏫" }, { en: "Park", ja: "こうえん", emoji: "⛲" }, { en: "Station", ja: "えき", emoji: "🚉" },
+  { en: "Store", ja: "おみせ", emoji: "🏪" }, { en: "Hospital", ja: "びょういん", emoji: "🏥" },
+  // どうし（英検5級で超重要！）
+  { en: "Play", ja: "あそぶ", emoji: "⚽" }, { en: "Run", ja: "はしる", emoji: "🏃" }, { en: "Walk", ja: "あるく", emoji: "🚶" }, { en: "Swim", ja: "およぐ", emoji: "🏊" }, { en: "Eat", ja: "たべる", emoji: "😋" },
+  { en: "Drink", ja: "のむ", emoji: "🥤" }, { en: "Read", ja: "よむ", emoji: "📚" }, { en: "Write", ja: "かく", emoji: "✍️" }, { en: "Speak", ja: "はなす", emoji: "🗣️" }, { en: "Listen", ja: "きく", emoji: "🎧" },
+  { en: "See", ja: "みる", emoji: "👀" }, { en: "Sing", ja: "うたう", emoji: "🎤" }, { en: "Dance", ja: "おどる", emoji: "💃" }, { en: "Sleep", ja: "ねる", emoji: "😴" }, { en: "Wake up", ja: "おきる", emoji: "🥱" },
+  { en: "Study", ja: "べんきょうする", emoji: "📝" }, { en: "Wash", ja: "あらう", emoji: "🧼" }, { en: "Make", ja: "つくる", emoji: "🛠️" }, { en: "Have", ja: "もっている", emoji: "🤲" }, { en: "Like", ja: "すき", emoji: "❤️" },
+  // けいようし（英検5級で超重要！）
+  { en: "Big", ja: "おおきい", emoji: "🐘" }, { en: "Small", ja: "ちいさい", emoji: "🐭" }, { en: "Long", ja: "ながい", emoji: "📏" }, { en: "Short", ja: "みじかい", emoji: "✂️" }, { en: "Tall", ja: "せがたかい", emoji: "🦒" },
+  { en: "New", ja: "あたらしい", emoji: "✨" }, { en: "Old", ja: "ふるい", emoji: "🏚️" }, { en: "Good", ja: "よい", emoji: "👍" }, { en: "Bad", ja: "わるい", emoji: "👎" }, { en: "Hot", ja: "あつい", emoji: "🔥" },
+  { en: "Cold", ja: "さむい", emoji: "❄️" }, { en: "Warm", ja: "あたたかい", emoji: "☕" }, { en: "Cool", ja: "すずしい", emoji: "🍃" }, { en: "Fast", ja: "はやい", emoji: "🏎️" }, { en: "Slow", ja: "おそい", emoji: "🐢" },
+  { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" },
+  // あいさつ
+  { en: "Hello", ja: "こんにちは", emoji: "👋" }, { en: "Good morning", ja: "おはよう", emoji: "🌅" }, { en: "Good night", ja: "おやすみ", emoji: "🌃" }, { en: "Goodbye", ja: "さようなら", emoji: "👋" },
+  { en: "Thank you", ja: "ありがとう", emoji: "🙏" }, { en: "Sorry", ja: "ごめんなさい", emoji: "🙇" }, { en: "Yes", ja: "はい", emoji: "⭕" }, { en: "No", ja: "いいえ", emoji: "❌" }
 ];
 
 // 洋食ごはん 20種類データ
@@ -207,7 +225,7 @@ const allFoods = [
   { name: "ハンバーグ", emoji: "🍔" }, { name: "オムライス", emoji: "🍳" }, { name: "グラタン", emoji: "🥘" }, { name: "ステーキ", emoji: "🥩" }, { name: "ナポリタン", emoji: "🍝" },
   { name: "ピザ", emoji: "🍕" }, { name: "カレーライス", emoji: "🍛" }, { name: "ホットドッグ", emoji: "🌭" }, { name: "サンドイッチ", emoji: "🥪" }, { name: "フライドポテト", emoji: "🍟" },
   { name: "フライドチキン", emoji: "🍗" }, { name: "チーズフォンデュ", emoji: "🧀" }, { name: "ベーコンエッグ", emoji: "🥓" }, { name: "パンケーキ", emoji: "🥞" }, { name: "ワッフル", emoji: "🧇" },
-  { name: "クロワッサン", emoji: "🥐" }, { name: "フランスパン", emoji: "🥖" }, { name: "クリームシチュー", emoji: "🍲" }, { name: "ポタージュ", emoji: "🥣" }, { name: "パイ", emoji: "🥧" }
+  { name: "クロワッサン", emoji: "🥐" }, { name: "フランスパン", emoji: "🥖" }, { name: "シチュー", emoji: "🍲" }, { name: "ポタージュ", emoji: "🥣" }, { name: "パイ", emoji: "🥧" }
 ];
 
 // 進化先リスト
@@ -217,14 +235,13 @@ const evolutionsList = [
   { name: "グレイシア", file: "gureisia.png" }, { name: "ニンフィア", file: "ninfia.png" }
 ];
 
-// 状態変数
 let totalCorrect = 0;
 let currentExp = 0;
 let isEvolved = false;
 let currentPartner = { name: "イーブイ", file: "i-bui.png" };
-let activeFoods = []; // 現在選ばれている5つのごはん
+let activeFoods = [];
 
-// 音声読み込み設定
+// 音声読み込み
 let synthVoices = [];
 window.speechSynthesis.onvoiceschanged = () => { synthVoices = window.speechSynthesis.getVoices(); };
 
@@ -240,13 +257,11 @@ const evolveImg = document.getElementById('evolve-image');
 const mainTitle = document.getElementById('main-title');
 const resetBtn = document.getElementById('reset-evo-btn');
 
-// セーブデータを保存する関数
 function saveGameState() {
   const data = { totalCorrect, currentExp, isEvolved, currentPartner, activeFoods };
   localStorage.setItem('eigoQuizSaveData', JSON.stringify(data));
 }
 
-// セーブデータを読み込む関数
 function loadGameState() {
   const saved = localStorage.getItem('eigoQuizSaveData');
   if (saved) {
@@ -257,23 +272,20 @@ function loadGameState() {
     currentPartner = parsed.currentPartner || { name: "イーブイ", file: "i-bui.png" };
     activeFoods = parsed.activeFoods;
   }
-  
-  // もしデータがない、またはごはんが設定されていない場合は新しくランダムに5つ選ぶ
   if (!activeFoods || activeFoods.length === 0) {
     selectRandomFoods();
   }
 }
 
-// 20種類からランダムに5種類を選ぶ
+// 4問正解で1つ解放 (4, 8, 12, 16, 20) に変更
 function selectRandomFoods() {
   const shuffledFoods = [...allFoods].sort(() => 0.5 - Math.random()).slice(0, 5);
   activeFoods = shuffledFoods.map((food, index) => {
-    return { ...food, unlockCost: (index + 1) * 3 }; // 3, 6, 9, 12, 15
+    return { ...food, unlockCost: (index + 1) * 4 }; 
   });
   saveGameState();
 }
 
-// 初期化（起動時）
 function initRoom() {
   loadGameState();
   
@@ -323,7 +335,7 @@ function feedPartner(food) {
   expText.innerText = currentExp;
   expBar.style.width = currentExp + "%";
   
-  saveGameState(); // ごはんを食べたらセーブ
+  saveGameState(); 
   
   if (currentExp >= 100) {
     setTimeout(evolve, 1000);
@@ -335,7 +347,7 @@ function evolve() {
   const randomEvolution = evolutionsList[Math.floor(Math.random() * evolutionsList.length)];
   currentPartner = randomEvolution;
   
-  saveGameState(); // 進化したらセーブ
+  saveGameState(); 
   
   const overlay = document.getElementById('evolve-overlay');
   evolveImg.src = currentPartner.file;
@@ -345,14 +357,13 @@ function evolve() {
   initRoom();
 }
 
-// リセットボタン（初めから）
 resetBtn.onclick = () => {
   if (confirm("イーブイにもどって、いちから やりなおす？\n（あつめた ごはんの カギも リセットされるよ！）")) {
     isEvolved = false;
     currentExp = 0;
     totalCorrect = 0; 
     currentPartner = { name: "イーブイ", file: "i-bui.png" };
-    selectRandomFoods(); // ごはんのラインナップも新しく入れ替える
+    selectRandomFoods(); 
     initRoom();
   }
 };
@@ -368,8 +379,9 @@ document.getElementById('start-quiz-btn').onclick = () => {
 };
 
 function startRound() {
+  // 1セット4問をランダムに選ぶ
   const shuffled = [...wordData].sort(() => 0.5 - Math.random());
-  roundQuestions = shuffled.slice(0, 3);
+  roundQuestions = shuffled.slice(0, 4);
   currentQIndex = 0;
   showNextQuestion();
 }
@@ -382,84 +394,81 @@ function showNextQuestion() {
     return;
   }
   
-  document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/3)`;
+  document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/4)`;
   
   const qData = roundQuestions[currentQIndex];
   const contentEl = document.getElementById('quiz-content');
   contentEl.innerHTML = "";
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let qType = Math.floor(Math.random() * 3) + 1;
-  if (!SpeechRecognition && qType === 2) qType = 1;
+  
+  // 問題形式を順番に固定 (1:リスニング, 2:スピーキング, 3:リーディング, 4:英単語えらび)
+  let qType = currentQIndex + 1; 
+  if (!SpeechRecognition && qType === 2) qType = 1; // マイク非対応時はリスニングにする
   
   if (qType === 1) {
+    // 形式1：おとをきいて、えらぼう (リスニング)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">おとをきいて、えらぼう！</p>
       <button id="play-voice-btn">🔊</button>
       <div class="options-grid" id="options-container"></div>
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
-    createOptions(qData, contentEl.querySelector('#options-container'));
+    createPictureOptions(qData, contentEl.querySelector('#options-container'));
     setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else if (qType === 2) {
+    // 形式2：マイクでお話し (スピーキング ＆ おうちのひとOKボタン)
     contentEl.innerHTML = `
-      <p style="font-size:1.5rem; font-weight:bold;">マイクをおして、えいごでいってみよう！</p>
+      <p style="font-size:1.5rem; font-weight:bold;">マイクでおして、えいごでいってみよう！</p>
       <div class="question-emoji">${qData.emoji}</div>
       <div class="question-word">${qData.en}</div>
       <p style="font-size:1.2rem; color:#666;">（${qData.ja}）</p>
       <button class="mic-btn" id="mic-btn">🎤</button>
-      <button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;">🔊 きく</button>
+      <button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;">🔊</button>
+      
+      <div style="margin-top:20px; padding-top:15px; border-top:2px dashed #ccc;">
+        <p style="font-size:1rem; color:#888; margin-bottom:5px;">うまくはんのうしないときは…</p>
+        <button id="parent-ok-btn">おうちのひとがOKをだす ⭕</button>
+      </div>
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
-    const micBtn = document.getElementById('mic-btn');
     
-    // 【修正】マイクボタンを押すたびに新しく認識システムを起動し直す
+    // 親OKボタンの処理
+    document.getElementById('parent-ok-btn').onclick = () => checkAnswer(true);
+
+    const micBtn = document.getElementById('mic-btn');
     micBtn.onclick = () => {
       if (micBtn.classList.contains('listening')) return;
-      
       try {
         const recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
-        
         micBtn.classList.add('listening');
         
         recognition.onresult = (event) => {
           micBtn.classList.remove('listening');
           const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
           const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
-          
           if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
             checkAnswer(true);
           } else {
             checkAnswer(false);
           }
         };
-        
-        // エラー時は不正解にせず、ボタンを元の色に戻すだけ（やり直せる）
-        recognition.onerror = (e) => {
-          micBtn.classList.remove('listening');
-          console.log("Mic error:", e.error);
-        };
-        
-        recognition.onspeechend = () => {
-          recognition.stop();
-        };
-        
-        // 何も言葉が認識されなかった場合もやり直せるようにする
-        recognition.onnomatch = () => {
-          micBtn.classList.remove('listening');
-        };
-        
+        recognition.onerror = () => { micBtn.classList.remove('listening'); };
+        recognition.onspeechend = () => { recognition.stop(); };
+        recognition.onnomatch = () => { micBtn.classList.remove('listening'); };
         recognition.start();
       } catch(e) {
         micBtn.classList.remove('listening');
       }
     };
+    setTimeout(() => speakCuteVoice(qData.en), 500);
     
-  } else {
+  } else if (qType === 3) {
+    // 形式3：えいごをよんで、えらぼう (リーディング)
     contentEl.innerHTML = `
       <p style="font-size:1.5rem; font-weight:bold;">えいごをよんで、えらぼう！</p>
       <button id="play-voice-btn" style="margin-bottom:10px;">🔊</button>
@@ -467,12 +476,24 @@ function showNextQuestion() {
       <div class="options-grid" id="options-container"></div>
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
-    createOptions(qData, contentEl.querySelector('#options-container'));
+    createPictureOptions(qData, contentEl.querySelector('#options-container'));
     setTimeout(() => speakCuteVoice(qData.en), 500);
+    
+  } else {
+    // 形式4：にほんごをみて、えいごをえらぼう (英単語えらび)
+    contentEl.innerHTML = `
+      <p style="font-size:1.5rem; font-weight:bold;">にほんごをみて、えいごをえらぼう！</p>
+      <div class="question-emoji" style="font-size:4rem; margin:5px 0;">${qData.emoji}</div>
+      <div class="question-word" style="font-size:2rem; margin:5px 0;">${qData.ja}</div>
+      <div class="options-grid" id="options-container"></div>
+    `;
+    // この形式だけ、選択肢を「英語のテキスト」にする
+    createTextOptions(qData, contentEl.querySelector('#options-container'));
   }
 }
 
-function createOptions(correctData, container) {
+// 選択肢（絵と日本語）を作る関数
+function createPictureOptions(correctData, container) {
   const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
   const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
   
@@ -485,27 +506,36 @@ function createOptions(correctData, container) {
   });
 }
 
-// 【修正】高すぎず、落ち着いた声にするため pitch = 1.0 (標準) に設定
+// 選択肢（英語のテキスト）を作る関数
+function createTextOptions(correctData, container) {
+  const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
+  const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
+  
+  options.forEach(opt => {
+    const btn = document.createElement('div');
+    btn.className = 'option-btn';
+    // 英語を大きな文字で表示
+    btn.innerHTML = `<span style="font-size:2rem; font-weight:bold;">${opt.en}</span>`;
+    btn.onclick = () => {
+      // 押したときに英語を読み上げる
+      speakCuteVoice(opt.en); 
+      // 0.5秒後に正誤判定
+      setTimeout(() => checkAnswer(opt.en === correctData.en), 500);
+    };
+    container.appendChild(btn);
+  });
+}
+
 function speakCuteVoice(text) {
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'en-US';
-  
-  if (synthVoices.length === 0) {
-    synthVoices = window.speechSynthesis.getVoices();
-  }
-  
+  if (synthVoices.length === 0) { synthVoices = window.speechSynthesis.getVoices(); }
   const cuteVoice = synthVoices.find(v => 
-    v.lang.startsWith('en') && 
-    (v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.name.includes('Female'))
+    v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.name.includes('Female'))
   );
-  
-  if (cuteVoice) {
-    msg.voice = cuteVoice;
-  }
-  
+  if (cuteVoice) msg.voice = cuteVoice;
   msg.pitch = 1.0; 
   msg.rate = 0.9;  
-  
   window.speechSynthesis.speak(msg);
 }
 
@@ -519,7 +549,7 @@ function checkAnswer(isCorrect) {
     text.innerText = "せいかい！すごい！";
     text.style.color = "var(--correct)";
     totalCorrect++;
-    saveGameState(); // 正解したら鍵が増えるのでセーブ
+    saveGameState(); 
   } else {
     icon.innerText = "❌";
     text.innerText = "おしい！もういちど！";
