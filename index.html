@@ -6,128 +6,54 @@
   <meta name="robots" content="noindex, nofollow">
   <title>えいごクイズ - セット1（洋食＆イーブイ）</title>
   <style>
-    :root {
-      --primary: #FFB347;
-      --secondary: #FFCC33;
-      --bg: #FFF9E6;
-      --text: #5D4037;
-      --correct: #4CAF50;
-      --incorrect: #FF9800;
-      --btn-shadow: #E6A100;
-    }
-    
-    * { box-sizing: border-box; font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', 'Meiryo', sans-serif; }
-    
-    body {
-      margin: 0; padding: 0; background-color: var(--bg); color: var(--text);
-      text-align: center; overflow-x: hidden; touch-action: manipulation;
-    }
-    
+    :root { --primary: #FFB347; --secondary: #FFCC33; --bg: #FFF9E6; --text: #5D4037; --correct: #4CAF50; --incorrect: #FF9800; --btn-shadow: #E6A100; }
+    * { box-sizing: border-box; font-family: 'Hiragino Maru Gothic ProN', 'Rounded M+ 1c', sans-serif; }
+    body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); text-align: center; overflow-x: hidden; touch-action: manipulation; }
     h1, h2, h3, p { margin: 10px 0; }
     h1 { font-size: 1.5rem; color: #D84315; }
-    
     .view { display: none; padding: 20px 10px; min-height: 100vh; flex-direction: column; align-items: center; }
     .view.active { display: flex; }
-    
-    .big-btn {
-      background-color: var(--primary); color: white; border: none;
-      border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold;
-      box-shadow: 0 6px 0 var(--btn-shadow); cursor: pointer; margin: 10px;
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
+    .big-btn { background-color: var(--primary); color: white; border: none; border-radius: 20px; padding: 15px 30px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 6px 0 var(--btn-shadow); cursor: pointer; margin: 10px; transition: 0.1s; }
     .big-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--btn-shadow); }
-    
     #partner-container { position: relative; margin: 20px 0; }
-    #partner-image {
-      width: 200px; height: 200px; object-fit: contain;
-      margin: 0; padding: 10px; animation: float 3s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
+    #partner-image { width: 200px; height: 200px; object-fit: contain; margin: 0; padding: 10px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
     #partner-name { font-size: 1.8rem; font-weight: bold; }
-    
     .exp-container { width: 90%; max-width: 400px; margin: 10px 0; }
     .exp-label { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }
     .exp-bar-bg { background-color: #E0E0E0; border-radius: 15px; height: 30px; overflow: hidden; position: relative; border: 3px solid #FFF;}
-    .exp-bar-fill {
-      background: linear-gradient(90deg, #FF9800, #FFC107);
-      height: 100%; width: 0%; transition: width 0.5s ease-out;
-    }
-    
+    .exp-bar-fill { background: linear-gradient(90deg, #FFB347, #FFCC33); height: 100%; width: 0%; transition: width 0.5s ease-out; }
     .food-section { width: 90%; max-width: 400px; background: white; border-radius: 20px; padding: 15px; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .food-list { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px; }
-    .food-item {
-      font-size: 2.5rem; background: var(--bg); border-radius: 15px; padding: 10px;
-      width: 70px; height: 70px; display: flex; justify-content: center; align-items: center;
-      cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0;
-    }
+    .food-item { font-size: 2.5rem; background: var(--bg); border-radius: 15px; padding: 10px; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; box-shadow: 0 4px 0 #E0E0E0; }
     .food-item:active { transform: translateY(4px); box-shadow: 0 0 0 #E0E0E0; }
-    
-    /* ごはんのロック状態と食べたあとの状態 */
     .food-item.locked { filter: grayscale(100%) opacity(0.3); pointer-events: none; }
     .food-item.eaten { filter: grayscale(100%) opacity(0.4); pointer-events: none; }
-    
-    .eaten-mark {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      font-size: 2rem; color: #4CAF50;
-      text-shadow: 2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF;
-    }
-    
+    .eaten-mark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; color: #4CAF50; text-shadow: 2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF; }
     .eating-msg { position: absolute; font-size: 1.5rem; color: #FF5722; font-weight: bold; top: 10px; opacity: 0; pointer-events: none; }
-    
     .quiz-header { margin-bottom: 20px; }
     #quiz-progress-text { font-size: 1.6rem; font-weight: bold; }
     #quiz-content { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    
     .question-emoji { font-size: 5rem; margin: 10px 0; }
     .question-word { font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #333; }
-    
     .options-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-    .option-btn {
-      background: #FFF; border: 4px solid var(--primary); border-radius: 15px;
-      padding: 15px; font-size: 2rem; display: flex; justify-content: center; align-items: center; gap: 10px;
-      box-shadow: 0 4px 0 var(--primary); cursor: pointer; transition: 0.1s;
-    }
+    .option-btn { background: #FFF; border: 4px solid var(--primary); border-radius: 15px; padding: 15px; font-size: 2rem; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 0 var(--primary); cursor: pointer; transition: 0.1s; }
     .option-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--primary); }
-    
-    .mic-btn {
-      background: #E91E63; box-shadow: 0 6px 0 #C2185B; color: white;
-      border: none; border-radius: 50%; width: 100px; height: 100px; font-size: 3rem;
-      margin: 20px auto; cursor: pointer; display: flex; justify-content: center; align-items: center;
-    }
+    .mic-btn { background: #E91E63; box-shadow: 0 6px 0 #C2185B; color: white; border: none; border-radius: 50%; width: 100px; height: 100px; font-size: 3rem; margin: 20px auto; cursor: pointer; display: flex; justify-content: center; align-items: center; }
     .mic-btn.listening { animation: pulse 1s infinite; background: #F44336; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-    
     #play-voice-btn { background: #2196F3; box-shadow: 0 6px 0 #1976D2; border-radius: 50%; width: 80px; height: 80px; font-size: 2.5rem; border: none; color: white; cursor: pointer; margin-bottom: 15px;}
-    
-    #parent-ok-btn {
-      background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 15px;
-      font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 0 #388E3C; cursor: pointer; margin-top: 15px; width: 100%;
-    }
+    #parent-ok-btn { background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 15px; font-size: 1.2rem; font-weight: bold; box-shadow: 0 4px 0 #388E3C; cursor: pointer; margin-top: 15px; width: 100%; }
     #parent-ok-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #388E3C; }
-
-    #feedback-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      display: flex; justify-content: center; align-items: center; flex-direction: column;
-      z-index: 100; background: rgba(255,255,255,0.9); opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    }
+    #feedback-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 100; background: rgba(255,255,255,0.95); opacity: 0; pointer-events: none; transition: 0.3s; }
     #feedback-overlay.show { opacity: 1; pointer-events: auto; }
     .feedback-icon { font-size: 10rem; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; }
+    .feedback-text { font-size: 2.5rem; font-weight: bold; margin-top: 10px; line-height: 1.4; }
     @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-    
-    #evolve-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s;
-    }
+    #evolve-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 255, 255, 0.95); z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 1s; }
     #evolve-overlay.show { opacity: 1; pointer-events: auto; }
     .evolve-sparkle { font-size: 5rem; animation: spin 2s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
-    
     #evolve-image { width: 250px; height: 250px; object-fit: contain; margin: 20px; }
   </style>
 </head>
@@ -136,26 +62,20 @@
 <div id="app">
   <div id="room-view" class="view active">
     <h1 id="main-title">えいごクイズ - セット1<br>（ようしょく＆イーブイ）</h1>
-    
     <div id="partner-container">
       <img id="partner-image" src="" alt="パートナー">
       <div id="partner-name">イーブイ</div>
       <div id="eating-msg" class="eating-msg">もぐもぐ♪</div>
     </div>
-    
     <div class="exp-container">
       <div class="exp-label">なかよしど: <span id="exp-text">0</span>%</div>
-      <div class="exp-bar-bg">
-         <div id="exp-bar" class="exp-bar-fill"></div>
-      </div>
+      <div class="exp-bar-bg"><div id="exp-bar" class="exp-bar-fill"></div></div>
     </div>
-    
     <div class="food-section">
       <p style="font-size: 1.2rem; font-weight: bold;">ごはん（かぎ🔑: <span id="key-count">0</span>）</p>
       <p style="font-size: 0.9rem; color: #777;">４もんせいかいで、ごはんが１つひらくよ！</p>
       <div id="food-list" class="food-list"></div>
     </div>
-    
     <button id="start-quiz-btn" class="big-btn">クイズをする (4もん)</button>
     <button id="reset-evo-btn" class="big-btn" style="display:none; background-color: #9C27B0; box-shadow: 0 6px 0 #7B1FA2;">イーブイにもどる🔄</button>
   </div>
@@ -247,7 +167,6 @@ const allFoods = [
   { name: "クロワッサン", emoji: "🥐" }, { name: "フランスパン", emoji: "🥖" }, { name: "シチュー", emoji: "🍲" }, { name: "ポタージュ", emoji: "🥣" }, { name: "パイ", emoji: "🥧" }
 ];
 
-// 進化先リスト
 const evolutionsList = [
   { name: "シャワーズ", file: "syawa-zu.png" }, { name: "サンダース", file: "sanda-su.png" }, { name: "ブースター", file: "bu-suta-.png" },
   { name: "エーフィ", file: "e-fi.jpg" }, { name: "ブラッキー", file: "buraxtuki-.png" }, { name: "リーフィア", file: "ri-fia.png" },
@@ -295,7 +214,6 @@ function loadGameState() {
   }
 }
 
-// 4問正解で1つ解放。各ごはんに「まだ食べてない（isEaten: false）」のデータを追加。
 function selectRandomFoods() {
   const shuffledFoods = [...allFoods].sort(() => 0.5 - Math.random()).slice(0, 5);
   activeFoods = shuffledFoods.map((food, index) => {
@@ -328,7 +246,6 @@ function initRoom() {
     const isUnlocked = totalCorrect >= food.unlockCost;
     const foodEl = document.createElement('div');
     
-    // 食べたか、まだロックされているか、あげられる状態かで見た目を変える
     if (food.isEaten) {
       foodEl.className = 'food-item eaten';
       foodEl.innerHTML = `${food.emoji}<div class="eaten-mark">✔️</div>`;
@@ -338,13 +255,10 @@ function initRoom() {
     } else {
       foodEl.className = 'food-item';
       foodEl.innerText = food.emoji;
-      
-      // まだ食べてなくて進化してない時だけタップできる
       if (!isEvolved) {
         foodEl.onclick = () => feedPartner(index);
       }
     }
-    
     foodListEl.appendChild(foodEl);
   });
 }
@@ -353,7 +267,6 @@ function feedPartner(index) {
   if (isEvolved) return;
   if (activeFoods[index].isEaten) return;
   
-  // 食べたことにする
   activeFoods[index].isEaten = true;
   
   const msg = document.getElementById('eating-msg');
@@ -364,14 +277,13 @@ function feedPartner(index) {
   setTimeout(() => { partnerImg.style.transform = "scale(1)"; }, 300);
   setTimeout(() => { msg.style.opacity = 0; msg.style.top = "10px"; partnerImg.style.animation = "float 3s ease-in-out infinite"; }, 1000);
   
-  // 1つで20%増える（5つ全部あげると100%になる）
   currentExp += 20;
   if(currentExp > 100) currentExp = 100;
   expText.innerText = currentExp;
   expBar.style.width = currentExp + "%";
   
   saveGameState(); 
-  initRoom(); // 画面を更新して✔️マークをつける
+  initRoom(); 
   
   if (currentExp >= 100) {
     setTimeout(evolve, 1000);
@@ -393,7 +305,6 @@ function evolve() {
   initRoom();
 }
 
-// ポップアップを消して、ボタンを押したらすぐにリセットされるように変更
 resetBtn.onclick = () => {
   isEvolved = false;
   currentExp = 0;
@@ -436,7 +347,6 @@ function showNextQuestion() {
   
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   
-  // 1:リスニング, 2:スピーキング, 3:リーディング, 4:英単語えらび
   let qType = currentQIndex + 1; 
   if (!SpeechRecognition && qType === 2) qType = 1; 
   
@@ -465,7 +375,7 @@ function showNextQuestion() {
       </div>
     `;
     document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
-    document.getElementById('parent-ok-btn').onclick = () => checkAnswer(true);
+    document.getElementById('parent-ok-btn').onclick = () => checkAnswer(true, qData);
 
     const micBtn = document.getElementById('mic-btn');
     micBtn.onclick = () => {
@@ -482,9 +392,9 @@ function showNextQuestion() {
           const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
           const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
           if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
-            checkAnswer(true);
+            checkAnswer(true, qData);
           } else {
-            checkAnswer(false);
+            checkAnswer(false, qData);
           }
         };
         recognition.onerror = () => { micBtn.classList.remove('listening'); };
@@ -527,7 +437,7 @@ function createPictureOptions(correctData, container) {
     const btn = document.createElement('div');
     btn.className = 'option-btn';
     btn.innerHTML = `<span style="font-size:3rem;">${opt.emoji}</span> <span style="font-size:1.5rem;">${opt.ja}</span>`;
-    btn.onclick = () => checkAnswer(opt.en === correctData.en);
+    btn.onclick = () => checkAnswer(opt.en === correctData.en, correctData);
     container.appendChild(btn);
   });
 }
@@ -542,7 +452,7 @@ function createTextOptions(correctData, container) {
     btn.innerHTML = `<span style="font-size:2rem; font-weight:bold;">${opt.en}</span>`;
     btn.onclick = () => {
       speakCuteVoice(opt.en); 
-      setTimeout(() => checkAnswer(opt.en === correctData.en), 500);
+      setTimeout(() => checkAnswer(opt.en === correctData.en, correctData), 500);
     };
     container.appendChild(btn);
   });
@@ -561,20 +471,28 @@ function speakCuteVoice(text) {
   window.speechSynthesis.speak(msg);
 }
 
-function checkAnswer(isCorrect) {
+// ★ ここでスペルと日本語を大きく表示するように改良しました！ ★
+function checkAnswer(isCorrect, correctData) {
   const overlay = document.getElementById('feedback-overlay');
   const icon = document.getElementById('feedback-icon');
   const text = document.getElementById('feedback-text');
   
   if (isCorrect) {
     icon.innerText = "⭕";
-    text.innerText = "せいかい！すごい！";
+    // 正解のときはスペルと日本語を両方表示
+    text.innerHTML = `せいかい！すごい！<br>
+                      <span style="font-size:3.5rem; color:#E91E63; display:block; margin-top:15px;">${correctData.en}</span>
+                      <span style="font-size:1.5rem; color:#333;">${correctData.ja}</span>`;
     text.style.color = "var(--correct)";
     totalCorrect++;
     saveGameState(); 
   } else {
     icon.innerText = "❌";
-    text.innerText = "おしい！もういちど！";
+    // 不正解のときも正しいスペルと日本語を表示して教える
+    text.innerHTML = `おしい！もういちど！<br>
+                      <span style="font-size:1.2rem; color:#666; display:block; margin-top:15px;">せいかいは：</span>
+                      <span style="font-size:3rem; color:#E91E63; display:block;">${correctData.en}</span>
+                      <span style="font-size:1.2rem; color:#333;">${correctData.ja}</span>`;
     text.style.color = "var(--incorrect)";
   }
   
@@ -587,7 +505,7 @@ function checkAnswer(isCorrect) {
       currentQIndex++;
       showNextQuestion();
     }
-  }, 2000);
+  }, 2500); // スペルを読む時間のために表示時間を少し長く(2.5秒)しました
 }
 
 window.onload = initRoom;
