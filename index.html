@@ -155,19 +155,20 @@
     
     <div class="food-section">
       <p style="font-size: 1.2rem; font-weight: bold;">ごはん（かぎ🔑: <span id="key-count">0</span>）</p>
-      <p style="font-size: 0.9rem; color: #777;">２もんせいかいで、ごはんが１つひらくよ！</p>
+      <p style="font-size: 0.9rem; color: #777;">３もんせいかいで、ごはんが１つひらくよ！</p>
       <div id="food-list" class="food-list">
         <!-- ごはんアイテムがここに生成されます -->
       </div>
     </div>
     
-    <button id="start-quiz-btn" class="big-btn">クイズをする (5もん)</button>
+    <button id="start-quiz-btn" class="big-btn">クイズをする (3もん)</button>
+    <button id="reset-evo-btn" class="big-btn" style="display:none; background-color: #9C27B0; box-shadow: 0 6px 0 #7B1FA2;">イーブイにもどる🔄</button>
   </div>
 
   <!-- クイズ画面 -->
   <div id="quiz-view" class="view">
     <div class="quiz-header">
-      <div id="quiz-progress-text">だい 1 もん！ (1/5)</div>
+      <div id="quiz-progress-text">だい 1 もん！ (1/3)</div>
     </div>
     
     <div id="quiz-content">
@@ -227,16 +228,16 @@ const wordData = [
   { en: "Happy", ja: "うれしい", emoji: "😊" }, { en: "Sad", ja: "かなしい", emoji: "😢" }, { en: "Angry", ja: "おこる", emoji: "😠" }, { en: "Hungry", ja: "おなかすいた", emoji: "🤤" }, { en: "Sleepy", ja: "ねむい", emoji: "🥱" }
 ];
 
-// ごはんリスト
+// ごはんリスト (必要正解数を3の倍数に変更)
 const foodData = [
-  { id: "f1", name: "ハンバーグ", emoji: "🍔", unlockCost: 2 },
-  { id: "f2", name: "オムライス", emoji: "🍳", unlockCost: 4 },
-  { id: "f3", name: "グラタン", emoji: "🥘", unlockCost: 6 },
-  { id: "f4", name: "ステーキ", emoji: "🥩", unlockCost: 8 },
-  { id: "f5", name: "ナポリタン", emoji: "🍝", unlockCost: 10 }
+  { id: "f1", name: "ハンバーグ", emoji: "🍔", unlockCost: 3 },
+  { id: "f2", name: "オムライス", emoji: "🍳", unlockCost: 6 },
+  { id: "f3", name: "グラタン", emoji: "🥘", unlockCost: 9 },
+  { id: "f4", name: "ステーキ", emoji: "🥩", unlockCost: 12 },
+  { id: "f5", name: "ナポリタン", emoji: "🍝", unlockCost: 15 }
 ];
 
-// 進化先リスト (ランダムで選ばれる8種類)
+// 進化先リスト
 const evolutionsList = [
   { name: "シャワーズ", file: "syawa-zu.png" },
   { name: "サンダース", file: "sanda-su.png" },
@@ -253,7 +254,7 @@ let currentExp = 0;   // なかよし度
 let currentPartner = { name: "イーブイ", file: "i-bui.png" }; // 現在の姿
 let isEvolved = false;
 
-// 音声読み込み設定 (ブラウザによって非同期で読み込まれるため)
+// 音声読み込み設定
 let synthVoices = [];
 window.speechSynthesis.onvoiceschanged = () => {
   synthVoices = window.speechSynthesis.getVoices();
@@ -270,6 +271,7 @@ const partnerImg = document.getElementById('partner-image');
 const partnerName = document.getElementById('partner-name');
 const evolveImg = document.getElementById('evolve-image');
 const mainTitle = document.getElementById('main-title');
+const resetBtn = document.getElementById('reset-evo-btn');
 
 // Web Speech APIの準備
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -292,6 +294,10 @@ function initRoom() {
   
   if (isEvolved) {
     mainTitle.innerHTML = `えいごクイズ - セット1<br>（ようしょく＆${currentPartner.name}）`;
+    resetBtn.style.display = 'inline-block'; // 進化後はリセットボタンを表示
+  } else {
+    mainTitle.innerHTML = `えいごクイズ - セット1<br>（ようしょく＆イーブイ）`;
+    resetBtn.style.display = 'none'; // 進化前は非表示
   }
   
   foodData.forEach(food => {
@@ -349,10 +355,22 @@ function evolve() {
   initRoom();
 }
 
+// リセットボタンの処理（イーブイに戻して最初から遊ぶ）
+resetBtn.onclick = () => {
+  isEvolved = false;
+  currentExp = 0;
+  totalCorrect = 0; // 鍵もリセット
+  currentPartner = { name: "イーブイ", file: "i-bui.png" };
+  
+  expText.innerText = currentExp;
+  expBar.style.width = currentExp + "%";
+  
+  initRoom();
+};
+
 // --- クイズロジック ---
 let roundQuestions = [];
 let currentQIndex = 0;
-let currentCorrectAnswer = null;
 
 document.getElementById('start-quiz-btn').onclick = () => {
   roomView.classList.remove('active');
@@ -361,9 +379,9 @@ document.getElementById('start-quiz-btn').onclick = () => {
 };
 
 function startRound() {
-  // ランダムに5問選ぶ
+  // ランダムに3問選ぶ
   const shuffled = [...wordData].sort(() => 0.5 - Math.random());
-  roundQuestions = shuffled.slice(0, 5);
+  roundQuestions = shuffled.slice(0, 3);
   currentQIndex = 0;
   showNextQuestion();
 }
@@ -377,14 +395,13 @@ function showNextQuestion() {
     return;
   }
   
-  document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/5)`;
+  document.getElementById('quiz-progress-text').innerText = `だい ${currentQIndex + 1} もん！ (${currentQIndex + 1}/3)`;
   
   const qData = roundQuestions[currentQIndex];
-  currentCorrectAnswer = qData;
   const contentEl = document.getElementById('quiz-content');
   contentEl.innerHTML = "";
   
-  // クイズ形式をランダムに決定 (1: 絵+音声選択, 2: 発音, 3: スペル選択)
+  // クイズ形式をランダムに決定
   let qType = Math.floor(Math.random() * 3) + 1;
   if (!recognition && qType === 2) qType = 1; // 音声認識非対応ブラウザ対策
   
@@ -394,9 +411,9 @@ function showNextQuestion() {
       <button id="play-voice-btn">🔊</button>
       <div class="options-grid" id="options-container"></div>
     `;
-    document.getElementById('play-voice-btn').onclick = () => playVoice(qData.en);
-    createOptions(qData, contentEl.querySelector('#options-container'), true);
-    setTimeout(() => playVoice(qData.en), 500);
+    document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
+    createOptions(qData, contentEl.querySelector('#options-container'));
+    setTimeout(() => speakCuteVoice(qData.en), 500);
     
   } else if (qType === 2) {
     contentEl.innerHTML = `
@@ -407,7 +424,7 @@ function showNextQuestion() {
       <button class="mic-btn" id="mic-btn">🎤</button>
       <button id="play-voice-btn" style="margin-top:10px; width:60px; height:60px; font-size:1.5rem;">🔊 きく</button>
     `;
-    document.getElementById('play-voice-btn').onclick = () => playVoice(qData.en);
+    document.getElementById('play-voice-btn').onclick = () => speakCuteVoice(qData.en);
     const micBtn = document.getElementById('mic-btn');
     
     micBtn.onclick = () => {
@@ -420,7 +437,6 @@ function showNextQuestion() {
       const spoken = event.results[0][0].transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
       const target = qData.en.toLowerCase().replace(/[^a-z0-9]/g, '');
       
-      // 5歳児向けに甘い判定
       if (spoken.includes(target) || target.includes(spoken) || spoken.length > 0) {
         checkAnswer(true);
       } else {
@@ -435,11 +451,11 @@ function showNextQuestion() {
       <div class="question-word" style="font-size:3.5rem; color:#E91E63;">${qData.en}</div>
       <div class="options-grid" id="options-container"></div>
     `;
-    createOptions(qData, contentEl.querySelector('#options-container'), true);
+    createOptions(qData, contentEl.querySelector('#options-container'));
   }
 }
 
-function createOptions(correctData, container, useEmoji) {
+function createOptions(correctData, container) {
   const dummies = [...wordData].filter(w => w.en !== correctData.en).sort(() => 0.5 - Math.random()).slice(0, 2);
   const options = [correctData, ...dummies].sort(() => 0.5 - Math.random());
   
@@ -454,8 +470,8 @@ function createOptions(correctData, container, useEmoji) {
   });
 }
 
-// かわいくて聞き取りやすいボイス設定
-function playVoice(text) {
+// かわいくて聞き取りやすいボイス共通設定
+function speakCuteVoice(text) {
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'en-US';
   
@@ -463,7 +479,7 @@ function playVoice(text) {
     synthVoices = window.speechSynthesis.getVoices();
   }
   
-  // 女性らしい、または子供向けの聞き取りやすい声を探す
+  // 女性らしい声を探す
   const cuteVoice = synthVoices.find(v => 
     v.lang.startsWith('en') && 
     (v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Victoria') || v.name.includes('Female'))
@@ -473,7 +489,6 @@ function playVoice(text) {
     msg.voice = cuteVoice;
   }
   
-  // 少し高めの声（ピッチ）で、ゆっくりめに設定
   msg.pitch = 1.5; 
   msg.rate = 0.85; 
   
@@ -498,12 +513,8 @@ function checkAnswer(isCorrect) {
   
   overlay.classList.add('show');
   
-  // 効果音代わりの音声
-  const msg = new SpeechSynthesisUtterance(isCorrect ? "Good job!" : "Oh no");
-  msg.lang = 'en-US';
-  msg.pitch = 1.5;
-  msg.rate = 0.9;
-  window.speechSynthesis.speak(msg);
+  // 正解・不正解のボイスも可愛い声に統一
+  speakCuteVoice(isCorrect ? "Good job!" : "Oh no");
   
   setTimeout(() => {
     overlay.classList.remove('show');
